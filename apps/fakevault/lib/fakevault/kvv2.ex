@@ -12,10 +12,10 @@ defmodule FakeVault.KVv2 do
             deleted: String.t(),
             destroyed: boolean,
             version: integer,
-            data: Map.t()
+            data: %{}
           }
 
-    @spec metadata(t()) :: Map.t()
+    @spec metadata(t()) :: %{}
     def metadata(v),
       do: %{
         "created_time" => v.created,
@@ -24,7 +24,7 @@ defmodule FakeVault.KVv2 do
         "version" => v.version
       }
 
-    @spec new(integer, Map.t()) :: t()
+    @spec new(integer, %{}) :: t()
     def new(version, data) do
       %__MODULE__{
         created: DateTime.utc_now() |> DateTime.to_iso8601(),
@@ -35,7 +35,7 @@ defmodule FakeVault.KVv2 do
       }
     end
 
-    @spec put([t()], Map.t()) :: [t()]
+    @spec put([t()], %{}) :: [t()]
     def put([], data), do: [new(1, data)]
     def put([v | _] = versions, data), do: [new(v.version + 1, data) | versions]
 
