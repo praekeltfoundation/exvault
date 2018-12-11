@@ -2,24 +2,12 @@ defmodule ExVault.KV1Test do
   use ExUnit.Case
 
   alias ExVault.KV1
-  alias TestHelpers.Setup
+
+  import TestHelpers.Setup, [:client_any]
 
   setup_all do
     TestHelpers.setup_apps([:hackney])
   end
-
-  defp assert_timestamp_since(ts, before) do
-    now = DateTime.utc_now()
-    {:ok, time, 0} = DateTime.from_iso8601(ts)
-
-    assert DateTime.compare(time, before) == :gt,
-           "Expected timestamp no earlier than #{before}, got #{ts}"
-
-    assert DateTime.compare(time, now) == :lt,
-           "Expected timestamp in the past (as of #{now}), got #{ts}"
-  end
-
-  import TestHelpers.Setup, [:client_any]
 
   setup [:client_any, :kvv1_backend]
 
@@ -28,7 +16,7 @@ defmodule ExVault.KV1Test do
   end
 
   defp kvv1_backend(%{client: client}) do
-    ExVault.write(client, "sys/mounts", "kvv1", %{"type" => "kv"})
+    ExVault.write(client, "sys/mounts", "kvv1", %{"type" => "kv", "options" => %{"version" => 1}})
     on_exit(fn -> ExVault.delete(client, "sys/mounts", "kvv1") end)
     :ok
   end
@@ -53,21 +41,9 @@ defmodule ExVault.KV1Test do
     assert resp.body == ""
 
     assert %{
-      "auth" => nil,
-      "data" => %{"hello" => "world"}
-    } = assert_present(client, path).body
-  end
-
-  test "write PUT", %{client: client} do
-    # FIXME: This tests FakeVault rather than the client.
-    path = TestHelpers.randkey()
-    resp = assert_status(204, Tesla.put(client, "/v1/kvv1/#{path}", %{"hello" => "world"}))
-    assert resp.body == ""
-
-    assert %{
-      "auth" => nil,
-      "data" => %{"hello" => "world"}
-    } = assert_present(client, path).body
+             "auth" => nil,
+             "data" => %{"hello" => "world"}
+           } = assert_present(client, path).body
   end
 
   test "read", %{client: client} do
@@ -76,9 +52,9 @@ defmodule ExVault.KV1Test do
     resp = assert_status(200, KV1.read(client, "kvv1", path))
 
     assert %{
-      "auth" => nil,
-      "data" => %{"hello" => "world"}
-    } = resp.body
+             "auth" => nil,
+             "data" => %{"hello" => "world"}
+           } = resp.body
   end
 
   test "read missing", %{client: client} do
@@ -108,9 +84,9 @@ defmodule ExVault.KV1Test do
     resp = assert_status(200, KV1.list(client, "kvv1", ""))
 
     assert %{
-      "auth" => nil,
-      "data" => %{"keys" => [path]}
-    } = resp.body
+             "auth" => nil,
+             "data" => %{"keys" => [path]}
+           } = resp.body
   end
 
   test "list subfolder", %{client: client} do

@@ -21,8 +21,8 @@ defmodule ExVault do
     Tesla.client(middleware, adapter)
   end
 
-  def read(client, mount, path) do
-    Tesla.get(client, "/v1/#{mount}/#{path}")
+  def read(client, mount, path, opts \\ []) do
+    Tesla.get(client, "/v1/#{mount}/#{path}", opts)
   end
 
   def write(client, mount, path, params) do

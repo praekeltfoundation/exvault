@@ -1,8 +1,6 @@
 defmodule ExVaultTest do
   use ExUnit.Case
 
-  alias ExVault.KV2
-
   setup do
     TestHelpers.setup_apps([:hackney])
   end
@@ -33,17 +31,6 @@ defmodule ExVaultTest do
     else
       client_external(ctx)
     end
-  end
-
-  defp assert_timestamp_since(ts, before) do
-    now = DateTime.utc_now()
-    {:ok, time, 0} = DateTime.from_iso8601(ts)
-
-    assert DateTime.compare(time, before) == :gt,
-           "Expected timestamp no earlier than #{before}, got #{ts}"
-
-    assert DateTime.compare(time, now) == :lt,
-           "Expected timestamp in the past (as of #{now}), got #{ts}"
   end
 
   @spec randkey() :: binary
@@ -164,50 +151,4 @@ defmodule ExVaultTest do
       assert {:ok, %{status: 404}} = ExVault.list(client, "kvv1", path)
     end
   end
-
-  # describe "KV2" do
-  #   setup [:fake_vault, :kvv2_backend, :client_fake]
-  #   # setup [:client_external]
-
-  #   defp kvv2_backend(%{fake_vault: fake_vault}) do
-  #     FakeVault.add_backend("secret", FakeVault.KVv2)
-  #   end
-
-  #   test "put new data", %{client: client} do
-  #     key = randkey()
-  #     before = DateTime.utc_now()
-  #     assert {:ok, put_resp} = ExVault.KV2.put_data(client, key, %{"hello" => "world"})
-  #     assert put_resp.status == 200
-  #     assert %{
-  #       "auth" => nil,
-  #       "data" => %{
-  #         "created_time" => creation_time,
-  #         "deletion_time" => "",
-  #         "destroyed" => false,
-  #         "version" => 1
-  #       },
-  #     } = put_resp.body
-  #     assert_timestamp_since(creation_time, before)
-  #   end
-
-  #   # test "get", %{client: client} do
-  #   #   key = randkey()
-  #   #   assert {:ok, %{status: 204}} = ExVault.KV2.put_data(client, key, %{"hello" => "world"})
-  #   #   assert {:ok, get_resp} = ExVault.KV2.get_data(client, key, %{"hello" => "world"})
-  #   #   IO.inspect({:get, get_resp})
-  #   #   assert get_resp.status == 200
-  #   #   assert %{
-  #   #     "auth" => nil,
-  #   #     "data" => %{
-  #   #       "data" => %{"hello" => "world"},
-  #   #       "metadata" => %{
-  #   #         "created_time" => creation_time,
-  #   #         "deletion_time" => "",
-  #   #         "destroyed" => false,
-  #   #         "version" => 1
-  #   #       },
-  #   #     },
-  #   #   } = get_resp.body
-  #   # end
-  # end
 end
