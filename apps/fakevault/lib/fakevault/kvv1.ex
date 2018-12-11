@@ -10,14 +10,19 @@ defmodule FakeVault.KVv1 do
     case conn.method do
       "PUT" ->
         handle_post(conn, path, backend)
+
       "POST" ->
         handle_post(conn, path, backend)
+
       "GET" ->
         handle_get(conn, path, backend)
+
       "DELETE" ->
         handle_delete(conn, path, backend)
+
       "LIST" ->
         handle_list(conn, path, backend)
+
       _ ->
         IO.inspect({:kvv1, conn})
         Conn.send_resp(conn, 405, "")
@@ -91,7 +96,12 @@ defmodule FakeVault.KVv1 do
   end
 
   def handle_call({:list_kv_data, path}, _from, state) do
-    path = case path do "" -> ""; _ -> path <> "/" end
+    path =
+      case path do
+        "" -> ""
+        _ -> path <> "/"
+      end
+
     keys =
       state.kv_data
       |> Map.keys()
@@ -103,6 +113,7 @@ defmodule FakeVault.KVv1 do
       |> Enum.map(&String.replace(&1, ~r[/.*$], "/"))
       # Filter out any duplicate subtree paths.
       |> Enum.uniq()
+
     {:reply, {:ok, keys}, state}
   end
 end

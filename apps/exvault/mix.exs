@@ -40,7 +40,7 @@ defmodule ExVault.MixProject do
       {:hackney, "~> 1.14.0"},
 
       # Test deps.
-      {:fakevault, in_umbrella: true, runtime: false},
+      {:fakevault, in_umbrella: true, runtime: false}
     ]
   end
 end

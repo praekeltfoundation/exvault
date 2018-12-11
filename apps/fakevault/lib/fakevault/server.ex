@@ -31,9 +31,16 @@ defmodule FakeVault.Server do
     case Map.get(state.backends, mount) do
       nil ->
         backend_name = FakeVault.backend_name(state.name, mount)
-        {:ok, _} = DynamicSupervisor.start_child(FakeVault.backend_sup(state.name), {module, name: backend_name})
+
+        {:ok, _} =
+          DynamicSupervisor.start_child(
+            FakeVault.backend_sup(state.name),
+            {module, name: backend_name}
+          )
+
         backend = {module, backend_name}
         {:reply, :ok, %{state | backends: Map.put(state.backends, mount, backend)}}
+
       existing ->
         {:reply, {:error, "#{existing} already mounted at #{mount}"}, state}
     end

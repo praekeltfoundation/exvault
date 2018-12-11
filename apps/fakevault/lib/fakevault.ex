@@ -18,7 +18,6 @@ defmodule FakeVault do
   def add_backend(name \\ nil, mount, module),
     do: Server.add_backend(Server.name_ref(name), mount, module)
 
-
   defmodule Request do
     defstruct [:path, :params]
 
@@ -33,7 +32,8 @@ defmodule FakeVault do
     @moduledoc """
     Request handler behaviour.
     """
-    @callback handle(conn :: Plug.Conn.t(), backend_ref :: atom, path_suffix :: String.t()) :: Plug.Conn.t()
+    @callback handle(conn :: Plug.Conn.t(), backend_ref :: atom, path_suffix :: String.t()) ::
+                Plug.Conn.t()
 
     defmacro __using__(_opts) do
       quote do

@@ -6,9 +6,10 @@ defmodule FakeVault.Router do
 
   alias FakeVault.Server
 
-  plug Plug.Parsers,
+  plug(Plug.Parsers,
     parsers: [:json],
     json_decoder: Jason
+  )
 
   def init(opts) do
     %{server: Server.name_ref(opts[:name])}
@@ -17,6 +18,7 @@ defmodule FakeVault.Router do
   def call(conn, opts = %{server: server}) do
     conn = super(conn, opts)
     [_empty, _v1, mount, path_suffix] = String.split(conn.request_path, "/", parts: 4)
+
     case Server.get_backend(server, mount) do
       :not_mounted -> conn |> send_resp(404, "")
       {:ok, module, backend} -> apply(module, :handle, [conn, backend, path_suffix])
@@ -25,10 +27,12 @@ defmodule FakeVault.Router do
 
   def child_spec(opts \\ []) do
     {name, opts} = Keyword.pop(opts, :name)
+
     options =
       opts
       |> Keyword.put_new(:port, 0)
       |> Keyword.put_new(:ref, ranch_ref(name))
+
     Plug.Cowboy.child_spec(scheme: :http, plug: FakeVault.Router, options: options)
   end
 

@@ -8,9 +8,11 @@ defmodule FakeVault.KVv2 do
   @impl FakeVault.Handler
   def handle(conn, backend, path_suffix) do
     [entity, path] = String.split(path_suffix, "/", parts: 2)
+
     case {conn.method, entity} do
       {"POST", "data"} ->
         handle_post_data(conn, path, backend)
+
       _ ->
         IO.inspect({:kvv2, conn})
         Conn.send_resp(conn, 405, "")
@@ -20,6 +22,7 @@ defmodule FakeVault.KVv2 do
   defp handle_post_data(conn, path, backend) do
     {:ok, data} = GenServer.call(backend, {:set_kv_data, path, conn.params})
     body = build_response(resp_metadata())
+
     conn
     |> Conn.put_resp_content_type("application/json")
     |> Conn.send_resp(200, body)
