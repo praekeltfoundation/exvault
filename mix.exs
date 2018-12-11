@@ -6,7 +6,16 @@ defmodule ExvaultUmbrella.MixProject do
       apps_path: "apps",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      aliases: aliases()
+      aliases: aliases(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.json": :test,
+        "coveralls.detail": :test,
+        credo: :test,
+        release: :prod
+      ],
+      dialyzer: dialyzer()
     ]
   end
 
@@ -23,6 +32,27 @@ defmodule ExvaultUmbrella.MixProject do
   #
   # Run "mix help deps" for examples and options.
   defp deps do
-    []
+    [
+      # Dev/test/build tools.
+      {:excoveralls, "~> 0.8", only: :test},
+      {:dialyxir, "~> 1.0.0-rc.4", only: :dev, runtime: false},
+      {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp dialyzer do
+    [
+      # These are most of the optional warnings in the dialyzer docs. We skip
+      # :error_handling (because we don't care about functions that only raise
+      # exceptions) and two others that are intended for developing dialyzer
+      # itself.
+      flags: [
+        :unmatched_returns,
+        # The dialyzer docs indicate that the race condition check can
+        # sometimes take a whole lot of time.
+        :race_conditions,
+        :underspecs
+      ]
+    ]
   end
 end

@@ -9,7 +9,7 @@ defmodule FakeVault.MixProject do
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      elixir: "~> 1.7",
+      elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -27,10 +27,6 @@ defmodule FakeVault.MixProject do
   defp deps do
     [
       {:plug_cowboy, "~> 2.0"},
-
-      # Dev/test/build tools.
-      {:dialyxir, "~> 1.0.0-rc.4", only: :dev, runtime: false},
-      {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false}
     ]
   end
 end
