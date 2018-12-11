@@ -3,36 +3,36 @@ defmodule ExVaultTest do
 
   alias ExVault.KV2
 
-  # test "TODO: make this a real test" do
-  #   client = ExVault.new(baseurl: "http://127.0.0.1:8200", token: "root")
-  #   assert {:ok, put_resp} = ExVault.kv2_put(client, "foo", %{"hello" => "world"})
-  #   IO.inspect({:put, put_resp})
-  #   assert {:ok, get_resp} = ExVault.kv2_get(client, "foo")
-  #   IO.inspect({:get, get_resp})
-  # end
-
   setup do
     TestHelpers.setup_apps([:hackney])
   end
 
-  defp client_for_external_vault(_ctx) do
-    baseurl = System.get_env("VAULT_ADDR")
-    assert baseurl != nil, "VAULT_ADDR environment variable not set"
-    token = System.get_env("VAULT_ROOT_TOKEN")
-    assert token != nil, "VAULT_ROOT_TOKEN environment variable not set"
+  defp assert_env(var) do
+    value = System.get_env(var)
+    assert value != nil, "#{var} environment variable not set"
+    value
+  end
+
+  defp client_external(_ctx) do
+    baseurl = assert_env("VAULT_ADDR")
+    token = assert_env("VAULT_ROOT_TOKEN")
     client = ExVault.new(baseurl: baseurl, token: token)
     {:ok, client: client}
   end
 
-  defp fake_vault(_ctx) do
+  defp client_fake(_ctx) do
     TestHelpers.setup_apps([:plug_cowboy, :plug, :cowboy])
     {:ok, fake_vault} = start_supervised(FakeVault.Supervisor)
-    {:ok, fake_vault: fake_vault}
+    client = ExVault.new(baseurl: FakeVault.base_url(), token: "faketoken")
+    {:ok, fake_vault: fake_vault, client: client}
   end
 
-  defp client_for_fake_vault(_ctx) do
-    client = ExVault.new(baseurl: FakeVault.base_url(), token: "faketoken")
-    {:ok, client: client}
+  defp client_any(ctx) do
+    if System.get_env("EXVAULT_TEST_EXTERNAL") in [nil, "0"] do
+      client_fake(ctx)
+    else
+      client_external(ctx)
+    end
   end
 
   defp assert_timestamp_since(ts, before) do
@@ -53,8 +53,7 @@ defmodule ExVaultTest do
   describe "basic operations" do
     # This uses KVv1, which supports all basic operations.
 
-    # setup [:fake_vault, :client_for_fake_vault, :kvv1_backend]
-    setup [:client_for_external_vault, :kvv1_backend]
+    setup [:client_any, :kvv1_backend]
 
     defp kvv1_backend(%{fake_vault: _}) do
       FakeVault.add_backend("kvv1", FakeVault.KVv1)
@@ -129,14 +128,13 @@ defmodule ExVaultTest do
 
     test "list subfolder", %{client: client} do
       path = randkey()
-      writekey(client, "#{path}/k1", %{"hello" => "world"})
       writekey(client, "#{path}/k2", %{"goodbye" => "moon"})
-      writekey(client, "#{path}/k3/child", %{"blue" => "sky"})
+      writekey(client, "#{path}/k1", %{"hello" => "world"})
+      writekey(client, "#{path}/k3/c1", %{"blue" => "sky"})
+      writekey(client, "#{path}/k3/c2", %{"green" => "field"})
       resp = assert_status(200, ExVault.list(client, "kvv1", path))
-      assert %{
-        "auth" => nil,
-        "data" => %{"keys" => ["k1", "k2", "k3/"]},
-      } = resp.body
+      assert %{"auth" => nil, "data" => %{"keys" => keys}} = resp.body
+      assert Enum.sort(keys) == ["k1", "k2", "k3/"]
     end
 
     test "list missing", %{client: client} do
@@ -147,8 +145,8 @@ defmodule ExVaultTest do
   end
 
   # describe "KV2" do
-  #   setup [:fake_vault, :kvv2_backend, :client_for_fake_vault]
-  #   # setup [:client_for_external_vault]
+  #   setup [:fake_vault, :kvv2_backend, :client_fake]
+  #   # setup [:client_external]
 
   #   defp kvv2_backend(%{fake_vault: fake_vault}) do
   #     FakeVault.add_backend("secret", FakeVault.KVv2)
