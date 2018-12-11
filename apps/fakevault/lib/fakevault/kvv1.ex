@@ -8,6 +8,8 @@ defmodule FakeVault.KVv1 do
   @impl FakeVault.Handler
   def handle(conn, backend, path) do
     case conn.method do
+      "PUT" ->
+        handle_post(conn, path, backend)
       "POST" ->
         handle_post(conn, path, backend)
       "GET" ->

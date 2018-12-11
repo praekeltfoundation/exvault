@@ -83,6 +83,21 @@ defmodule ExVaultTest do
       path = randkey()
       resp = assert_status(204, ExVault.write(client, "kvv1", path, %{"hello" => "world"}))
       assert resp.body == ""
+      assert %{
+        "auth" => nil,
+        "data" => %{"hello" => "world"}
+      } = assert_present(client, path).body
+    end
+
+    test "write PUT", %{client: client} do
+      # FIXME: This tests FakeVault rather than the client.
+      path = randkey()
+      resp = assert_status(204, Tesla.put(client, "/v1/kvv1/#{path}", %{"hello" => "world"}))
+      assert resp.body == ""
+      assert %{
+        "auth" => nil,
+        "data" => %{"hello" => "world"}
+      } = assert_present(client, path).body
     end
 
     test "read", %{client: client} do
