@@ -1,5 +1,4 @@
 defmodule FakeVault.KVv1 do
-
   @moduledoc """
   Secrets backend implementation for kv version 1.
   """
@@ -30,7 +29,7 @@ defmodule FakeVault.KVv1 do
         handle_list(conn, path, backend)
 
       _ ->
-        Logger.info("Unexpected request in kvv1: #{conn}")
+        _ = Logger.info("Unexpected request in kvv1: #{conn}")
         Conn.send_resp(conn, 405, "")
     end
   end
