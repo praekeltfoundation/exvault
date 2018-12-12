@@ -5,6 +5,7 @@ defmodule FakeVault.Server do
   use GenServer
 
   defmodule State do
+    @moduledoc false
     defstruct root_token: nil, name: nil, backends: %{}
   end
 
@@ -21,7 +22,7 @@ defmodule FakeVault.Server do
   @impl GenServer
   def init(opts) do
     {name, opts} = Keyword.pop(opts, :name)
-    {root_token, opts} = Keyword.pop(opts, :root_token, "root")
+    {root_token, _opts} = Keyword.pop(opts, :root_token, "root")
     # {name, root_token} = Keyword.pop(opts, :root_token, UUID.uuid4())
     {:ok, %State{root_token: root_token, name: name}}
   end

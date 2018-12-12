@@ -1,4 +1,6 @@
 defmodule FakeVault.Supervisor do
+  @moduledoc false
+
   use Supervisor
 
   alias FakeVault.{Router, Server}

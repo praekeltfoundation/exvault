@@ -8,8 +8,7 @@ script:
   - mix format --check-formatted
   # This will mention FIXME and TODO comments without failing, any other issue
   # fails the build.
-  # No credo for now.
-  # - mix credo
+  - mix credo
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

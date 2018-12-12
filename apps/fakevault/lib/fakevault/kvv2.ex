@@ -1,8 +1,16 @@
 defmodule FakeVault.KVv2 do
+
+  @moduledoc """
+  Secrets backend implementation for kv version 2.
+  """
+
   use GenServer
   use FakeVault.Handler
+  require Logger
 
   defmodule Version do
+    @moduledoc false
+
     defstruct [:created, :deleted, :destroyed, :version, :data]
 
     @type t :: %__MODULE__{
@@ -63,7 +71,7 @@ defmodule FakeVault.KVv2 do
         handle_get_data(conn, path, backend)
 
       _ ->
-        IO.inspect({:kvv2, conn})
+        Logger.info("Unexpected request in kvv2: #{conn}")
         Conn.send_resp(conn, 405, "")
     end
   end
@@ -96,16 +104,6 @@ defmodule FakeVault.KVv2 do
     |> Conn.send_resp(status, Jason.encode!(body))
   end
 
-  # defp resp_metadata() do
-  #   # TODO: Use real(ish) metadata or something.
-  #   %{
-  #     "created_time" => "2018-05-29T10:24:30.181952826Z",
-  #     "deletion_time" => "",
-  #     "destroyed" => false,
-  #     "version" => 1
-  #   }
-  # end
-
   defp build_response(data) do
     # NOTE: This ignores a bunch of response fields that are poorly
     # documented and that we don't care about anyway. It also uses some
@@ -122,6 +120,7 @@ defmodule FakeVault.KVv2 do
   end
 
   defmodule State do
+    @moduledoc false
     defstruct kv_data: %{}
   end
 
@@ -130,6 +129,7 @@ defmodule FakeVault.KVv2 do
     {:ok, %State{}}
   end
 
+  @impl GenServer
   def handle_call({:get_kv_version, path, version}, _from, state) do
     ver =
       state.kv_data

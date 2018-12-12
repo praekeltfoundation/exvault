@@ -1,6 +1,12 @@
 defmodule FakeVault.KVv1 do
+
+  @moduledoc """
+  Secrets backend implementation for kv version 1.
+  """
+
   use GenServer
   use FakeVault.Handler
+  require Logger
 
   #############################################
   # Handler
@@ -24,7 +30,7 @@ defmodule FakeVault.KVv1 do
         handle_list(conn, path, backend)
 
       _ ->
-        IO.inspect({:kvv1, conn})
+        Logger.info("Unexpected request in kvv1: #{conn}")
         Conn.send_resp(conn, 405, "")
     end
   end
@@ -75,6 +81,7 @@ defmodule FakeVault.KVv1 do
   end
 
   defmodule State do
+    @moduledoc false
     defstruct kv_data: %{}
   end
 
@@ -83,6 +90,7 @@ defmodule FakeVault.KVv1 do
     {:ok, %State{}}
   end
 
+  @impl GenServer
   def handle_call({:get_kv_data, path}, _from, state) do
     {:reply, {:ok, Map.get(state.kv_data, path)}, state}
   end

@@ -1,4 +1,8 @@
 defmodule ExVault.KV2 do
+  @moduledoc """
+  A wrapper over the basic operations for working with KV v2 data.
+  """
+
   # TODO: config
 
   def get_data(client, mount, path, opts \\ []) do

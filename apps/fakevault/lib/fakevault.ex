@@ -19,12 +19,14 @@ defmodule FakeVault do
     do: Server.add_backend(Server.name_ref(name), mount, module)
 
   defmodule Request do
+    @moduledoc false
     defstruct [:path, :params]
 
     def from_conn(conn), do: %__MODULE__{path: conn.request_path, params: conn.params}
   end
 
   defmodule Response do
+    @moduledoc false
     defstruct [:body]
   end
 

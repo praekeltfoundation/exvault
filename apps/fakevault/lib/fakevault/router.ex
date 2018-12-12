@@ -15,7 +15,7 @@ defmodule FakeVault.Router do
     %{server: Server.name_ref(opts[:name])}
   end
 
-  def call(conn, opts = %{server: server}) do
+  def call(conn, %{server: server} = opts) do
     conn = super(conn, opts)
     [_empty, _v1, mount, path_suffix] = String.split(conn.request_path, "/", parts: 4)
 
@@ -36,6 +36,6 @@ defmodule FakeVault.Router do
     Plug.Cowboy.child_spec(scheme: :http, plug: FakeVault.Router, options: options)
   end
 
-  defp ranch_ref(name \\ nil), do: FakeVault.name_ref(name, "Router")
+  defp ranch_ref(name), do: FakeVault.name_ref(name, "Router")
   def port(name \\ nil), do: :ranch.get_port(ranch_ref(name))
 end
