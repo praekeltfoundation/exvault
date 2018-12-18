@@ -13,7 +13,7 @@ defmodule FakeVault do
   def backend_sup(name), do: name_ref(name, "Backends")
   def backend_name(name, mount), do: name_ref(name, "Backend.#{mount}")
 
-  def base_url(name \\ nil), do: "http://localhost:#{Router.port(name)}"
+  def base_url(name \\ nil), do: "http://127.0.0.1:#{Router.port(name)}"
 
   def add_backend(name \\ nil, mount, module),
     do: Server.add_backend(Server.name_ref(name), mount, module)
