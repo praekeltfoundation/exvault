@@ -23,5 +23,5 @@ jobs:
         directories:
           - $HOME/.mix
           - $HOME/.pltcache
-      before_script: travis_wait .co/build-plt-cache.sh
+      before_script: travis_wait .ci/build-plt-cache.sh
       script: mix dialyzer --halt-exit-status
