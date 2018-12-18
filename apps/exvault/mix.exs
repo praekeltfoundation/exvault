@@ -33,7 +33,7 @@ defmodule ExVault.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:tesla, "~>1.2.0"},
+      {:tesla, "~> 1.2.0"},
       {:jason, ">= 1.0.0"},
       # We use Hackney because it does cert and hostname verification by
       # default.
