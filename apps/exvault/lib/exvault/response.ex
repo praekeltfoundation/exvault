@@ -1,7 +1,11 @@
 defmodule ExVault.Response do
-
   defmodule Error do
     defstruct [:status, :errors]
+
+    @type t :: %__MODULE__{
+            status: integer,
+            errors: [String.t()]
+          }
 
     def from_resp(%{status: status, body: %{"errors" => errors}}) do
       %__MODULE__{status: status, errors: errors}
@@ -62,7 +66,7 @@ defmodule ExVault.Response do
           "wrap_info" => wrap_info,
           "warnings" => warnings,
           "auth" => auth
-                  }) do
+        }) do
       %__MODULE__{
         request_id: request_id,
         lease_id: lease_id,
