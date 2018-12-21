@@ -1,6 +1,8 @@
 defmodule ExVaultTest do
   use ExUnit.Case
 
+  alias ExVault.Response.Error
+
   setup do
     TestHelpers.setup_apps([:hackney])
   end
@@ -55,12 +57,12 @@ defmodule ExVaultTest do
     end
 
     defp assert_status(status, {:ok, resp}) do
-      assert resp.httpstatus == status
+      assert resp.status == status
       resp
     end
 
     defp assert_error(status, errlist, {:ok, resp}) do
-      assert resp == %ExVault.ErrorResponse{httpstatus: status, errors: errlist}
+      assert resp == %Error{status: status, errors: errlist}
       resp
     end
 
@@ -71,7 +73,7 @@ defmodule ExVaultTest do
       do: assert_status(200, ExVault.read(client, "kvv1", path))
 
     defp assert_present(client, path, data),
-      do: assert(assert_present(client, path).data == data)
+      do: assert(assert_present(client, path).logical.data == data)
 
     defp assert_absent(client, path),
       do: assert_status(404, ExVault.read(client, "kvv1", path))
@@ -96,7 +98,7 @@ defmodule ExVaultTest do
       path = randkey()
       writekey(client, path, %{"hello" => "world"})
       resp = assert_status(200, ExVault.read(client, "kvv1", path))
-      assert resp.data == %{"hello" => "world"}
+      assert resp.logical.data == %{"hello" => "world"}
     end
 
     test "read missing", %{client: client} do
@@ -123,7 +125,7 @@ defmodule ExVaultTest do
       path = randkey()
       writekey(client, path, %{"hello" => "world"})
       resp = assert_status(200, ExVault.list(client, "kvv1", ""))
-      assert resp.data == %{"keys" => [path]}
+      assert resp.logical.data == %{"keys" => [path]}
     end
 
     test "list subfolder", %{client: client} do
@@ -133,7 +135,7 @@ defmodule ExVaultTest do
       writekey(client, "#{path}/k3/c1", %{"blue" => "sky"})
       writekey(client, "#{path}/k3/c2", %{"green" => "field"})
       resp = assert_status(200, ExVault.list(client, "kvv1", path))
-      assert %{"keys" => keys} = resp.data
+      assert %{"keys" => keys} = resp.logical.data
       assert Enum.sort(keys) == ["k1", "k2", "k3/"]
     end
 

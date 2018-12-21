@@ -2,6 +2,7 @@ defmodule ExVault.KV2Test do
   use ExUnit.Case
 
   alias ExVault.KV2
+  alias ExVault.Response.Error
 
   setup_all do
     TestHelpers.setup_apps([:hackney])
@@ -33,17 +34,17 @@ defmodule ExVault.KV2Test do
   end
 
   defp assert_status(status, {:ok, resp}) do
-    assert resp.httpstatus == status
+    assert resp.status == status
     resp
   end
 
   defp assert_error(status, errlist, {:ok, resp}) do
-    assert resp == %ExVault.ErrorResponse{httpstatus: status, errors: errlist}
+    assert resp == %Error{status: status, errors: errlist}
     resp
   end
 
   defp put_version(client, path, value),
-    do: assert_status(200, KV2.put_data(client, "kvv2", path, value)).data
+    do: assert_status(200, KV2.put_data(client, "kvv2", path, value)).logical.data
 
   # TODO: config
 
@@ -57,7 +58,7 @@ defmodule ExVault.KV2Test do
              "deletion_time" => "",
              "destroyed" => false,
              "version" => 1
-           } = resp.data
+           } = resp.logical.data
 
     assert_timestamp_since(ctime, before)
   end
@@ -73,7 +74,7 @@ defmodule ExVault.KV2Test do
              "deletion_time" => "",
              "destroyed" => false,
              "version" => 2
-           } = resp.data
+           } = resp.logical.data
 
     assert_timestamp_since(ctime, before)
   end
@@ -92,7 +93,7 @@ defmodule ExVault.KV2Test do
                "destroyed" => false,
                "version" => 1
              }
-           } = resp.data
+           } = resp.logical.data
 
     ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
     resp = assert_status(200, KV2.get_data(client, "kvv2", path))
@@ -105,7 +106,7 @@ defmodule ExVault.KV2Test do
                "destroyed" => false,
                "version" => 2
              }
-           } = resp.data
+           } = resp.logical.data
   end
 
   test "read version", %{client: client} do
@@ -124,7 +125,7 @@ defmodule ExVault.KV2Test do
                "destroyed" => false,
                "version" => 1
              }
-           } = resp.data
+           } = resp.logical.data
 
     resp = assert_status(200, KV2.get_data(client, "kvv2", path, version: 2))
 
@@ -136,7 +137,7 @@ defmodule ExVault.KV2Test do
                "destroyed" => false,
                "version" => 2
              }
-           } = resp.data
+           } = resp.logical.data
 
     assert_error(404, [], KV2.get_data(client, "kvv2", path, version: 3))
   end
