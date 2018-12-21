@@ -1,0 +1,27 @@
+language: elixir
+elixir: '1.7'
+otp_release: '21.2'
+
+jobs:
+  include:
+    - script:
+        # This is basically `mix test` with coverage enabled.
+        - mix coveralls.json
+        - mix format --check-formatted
+        # This will mention FIXME and TODO comments without failing, any other
+        # issue fails the build.
+        - mix credo
+      after_success: bash <(curl -s https://codecov.io/bash)
+
+    - elixir: '1.6'
+      otp_release: '20.3'
+      # Only run tests. We do the other checks in the primary build.
+      script: mix test
+
+    - name: "dialyzer"
+      cache:
+        directories:
+          - $HOME/.mix
+          - $HOME/.pltcache
+      before_script: travis_wait .ci/build-plt-cache.sh
+      script: mix dialyzer --halt-exit-status
