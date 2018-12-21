@@ -65,11 +65,18 @@ defmodule FakeVault.KVv1 do
   end
 
   defp build_response(data) do
-    # NOTE: This ignores a bunch of response fields that are poorly
-    # documented and that we don't care about anyway. It also uses some
-    # hardcoded metadata because we don't care about that either, but
-    # probably want it to at least be present.
-    %{"auth" => nil, "data" => data}
+    # NOTE: A bunch of these fields are hardcoded, because we don't really care
+    # about their values in tests.
+    %{
+      "request_id" => "f2f1e2c7-c511-fc0d-7d6e-b7f1143c15d8",
+      "lease_id" => "",
+      "renewable" => false,
+      "lease_duration" => 2764800,
+      "data" => data,
+      "wrap_info" => nil,
+      "warnings" => nil,
+      "auth" => nil
+    }
   end
 
   #############################################
