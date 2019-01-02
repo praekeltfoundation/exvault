@@ -1,5 +1,16 @@
 defmodule ExVault.Response do
+  @moduledoc """
+  Structs for the most common Vault API response formats.
+
+  Vault does have a handful of APIs with responses that don't fit any of these,
+  but the documentation isn't particularly clear about what those are.
+  """
+
   defmodule Error do
+    @moduledoc """
+    Vault API error response. This represents an HTTP 4xx/5xx response.
+    """
+
     defstruct [:status, :errors]
 
     @type t :: %__MODULE__{
@@ -13,6 +24,12 @@ defmodule ExVault.Response do
   end
 
   defmodule Success do
+    @moduledoc """
+    Vault API success response. This represents an HTTP 2xx/5xx response.
+
+    Usually, the `logical` field will contain a `Response.Logical` struct.
+    """
+
     alias ExVault.Response.Logical
 
     defstruct [:status, :logical, :body]
@@ -33,6 +50,10 @@ defmodule ExVault.Response do
   end
 
   defmodule Logical do
+    @moduledoc """
+    Vault API "logical" response. Most Vault APIs return one of these.
+    """
+
     defstruct [
       :request_id,
       :lease_id,
