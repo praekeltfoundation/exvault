@@ -110,7 +110,7 @@ defmodule FakeVault.KVv2 do
       "request_id" => "f2f1e2c7-c511-fc0d-7d6e-b7f1143c15d8",
       "lease_id" => "",
       "renewable" => false,
-      "lease_duration" => 2764800,
+      "lease_duration" => 2_764_800,
       "data" => data,
       "wrap_info" => nil,
       "warnings" => nil,

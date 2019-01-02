@@ -78,25 +78,27 @@ defmodule ExVault.ResponseTest do
       "request_id" => "f2f1e2c7-c511-fc0d-7d6e-b7f1143c15d8",
       "lease_id" => "",
       "renewable" => false,
-      "lease_duration" => 2764800,
+      "lease_duration" => 2_764_800,
       "data" => %{"x" => "1"},
       "wrap_info" => nil,
       "warnings" => nil,
       "auth" => nil
     }
+
     start_tp(&json_resp(&1, 200, body))
     client = ExVault.new(baseurl: TesterPlug.url())
 
     assert {:ok, %Success{status: 200, body: ^body, logical: logical}} = mkreq(client)
+
     assert logical == %Logical{
-      request_id: "f2f1e2c7-c511-fc0d-7d6e-b7f1143c15d8",
-      lease_id: "",
-      renewable: false,
-      lease_duration: 2764800,
-      data: %{"x" => "1"},
-      wrap_info: nil,
-      warnings: nil,
-      auth: nil
-    }
+             request_id: "f2f1e2c7-c511-fc0d-7d6e-b7f1143c15d8",
+             lease_id: "",
+             renewable: false,
+             lease_duration: 2_764_800,
+             data: %{"x" => "1"},
+             wrap_info: nil,
+             warnings: nil,
+             auth: nil
+           }
   end
 end
