@@ -25,7 +25,7 @@ defmodule ExVault.Response do
 
   defmodule Success do
     @moduledoc """
-    Vault API success response. This represents an HTTP 2xx/5xx response.
+    Vault API success response. This represents an HTTP 2xx response.
 
     Usually, the `logical` field will contain a `Response.Logical` struct.
     """
