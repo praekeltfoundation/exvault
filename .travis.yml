@@ -2,11 +2,15 @@ language: elixir
 elixir: '1.7'
 otp_release: '21.2'
 
+before_script:
+  - wget https://releases.hashicorp.com/vault/1.0.1/vault_1.0.1_linux_amd64.zip
+  - unzip vault_1.0.1_linux_amd64.zip
+
 jobs:
   include:
     - script:
         # This is basically `mix test` with coverage enabled.
-        - mix coveralls.json
+        - VAULT_PATH=$(pwd)/vault mix coveralls.json
         - mix format --check-formatted
         # This will mention FIXME and TODO comments without failing, any other
         # issue fails the build.
@@ -16,7 +20,7 @@ jobs:
     - elixir: '1.6'
       otp_release: '20.3'
       # Only run tests. We do the other checks in the primary build.
-      script: mix test
+      script: VAULT_PATH=$(pwd)/vault mix test
 
     - name: "dialyzer"
       cache:

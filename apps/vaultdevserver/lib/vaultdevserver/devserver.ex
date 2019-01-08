@@ -102,7 +102,13 @@ defmodule VaultDevServer.DevServer do
   def init(opts) do
     Process.flag(:trap_exit, true)
     root_token = Keyword.get(opts, :root_token, "root")
-    cmd = System.find_executable("vault")
+    vault_path_default =
+      case System.get_env("VAULT_PATH") do
+        nil -> "vault"
+        vault_path -> vault_path
+      end
+    vault_path = Keyword.get(opts, :vault_path, vault_path_default)
+    cmd = System.find_executable(vault_path)
     args = ["server", "-dev", "-dev-root-token-id=#{root_token}"]
     port = Port.open({:spawn_executable, cmd}, [:binary, :stderr_to_stdout, args: args])
     state = init_lines(State.new(port))
