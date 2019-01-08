@@ -102,11 +102,13 @@ defmodule VaultDevServer.DevServer do
   def init(opts) do
     Process.flag(:trap_exit, true)
     root_token = Keyword.get(opts, :root_token, "root")
+
     vault_path_default =
       case System.get_env("VAULT_PATH") do
         nil -> "vault"
         vault_path -> vault_path
       end
+
     vault_path = Keyword.get(opts, :vault_path, vault_path_default)
     cmd = System.find_executable(vault_path)
     args = ["server", "-dev", "-dev-root-token-id=#{root_token}"]
