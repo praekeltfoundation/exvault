@@ -9,15 +9,17 @@ defmodule VaultDevServer.DevServer do
   @vault_started_line "==> Vault server started! Log data will stream in below:"
 
   defmodule State do
+    @moduledoc false
+
     defstruct [:port, :output_buf, :output_lines, :api_addr, :root_token]
 
     def new(port),
       do: %__MODULE__{
-            port: port,
-            output_buf: "",
-            output_lines: [],
-            api_addr: nil,
-            root_token: nil
+        port: port,
+        output_buf: "",
+        output_lines: [],
+        api_addr: nil,
+        root_token: nil
       }
 
     def add_output(state, {lines, buf}) do
@@ -43,30 +45,39 @@ defmodule VaultDevServer.DevServer do
   defp process_output(state, data) do
     {lines, buf} = collect_lines(state.output_buf <> data)
     state = State.add_output(state, {lines, buf})
+
     lines
     |> Enum.reverse()
     |> Enum.each(&send(self(), {:line, &1}))
+
     state
   end
 
   defp receive_first_line(state) do
     port = state.port
+
     receive do
       {^port, {:data, data}} ->
         state |> process_output(data) |> receive_first_line()
+
       {:line, line} ->
         {state, line}
     after
       5000 ->
-        IO.puts :stderr, "No message in 5 seconds"
+        IO.puts(:stderr, "No message in 5 seconds")
     end
   end
 
   defp collect_config(state) do
     port = state.port
+
     receive do
-      {^port, {:data, data}} -> state |> process_output(data) |> collect_config()
-      {:line, @vault_started_line} -> state
+      {^port, {:data, data}} ->
+        state |> process_output(data) |> collect_config()
+
+      {:line, @vault_started_line} ->
+        state
+
       {:line, line} ->
         state =
           case String.trim(line) do
@@ -74,10 +85,11 @@ defmodule VaultDevServer.DevServer do
             "Root Token: " <> token -> %State{state | root_token: token}
             _ -> state
           end
+
         collect_config(state)
     after
       5000 ->
-        IO.puts :stderr, "No message in 5 seconds"
+        IO.puts(:stderr, "No message in 5 seconds")
     end
   end
 
