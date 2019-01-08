@@ -2,6 +2,7 @@ defmodule ExVault.KV1Test do
   use ExUnit.Case
 
   alias ExVault.KV1
+  alias ExVault.Response.Error
 
   import TestHelpers.Setup, [:client_any]
 
@@ -26,41 +27,39 @@ defmodule ExVault.KV1Test do
     resp
   end
 
+  defp assert_error(status, errlist, {:ok, resp}) do
+    assert resp == %Error{status: status, errors: errlist}
+    resp
+  end
+
   defp writekey(client, path, value),
     do: assert_status(204, KV1.write(client, "kvv1", path, value))
 
   defp assert_present(client, path),
     do: assert_status(200, KV1.read(client, "kvv1", path))
 
+  defp assert_present(client, path, data),
+    do: assert(assert_present(client, path).logical.data == data)
+
   defp assert_absent(client, path),
     do: assert_status(404, KV1.read(client, "kvv1", path))
 
   test "write", %{client: client} do
     path = TestHelpers.randkey()
-    resp = assert_status(204, KV1.write(client, "kvv1", path, %{"hello" => "world"}))
-    assert resp.body == ""
-
-    assert %{
-             "auth" => nil,
-             "data" => %{"hello" => "world"}
-           } = assert_present(client, path).body
+    assert_status(204, KV1.write(client, "kvv1", path, %{"hello" => "world"}))
+    assert_present(client, path, %{"hello" => "world"})
   end
 
   test "read", %{client: client} do
     path = TestHelpers.randkey()
     writekey(client, path, %{"hello" => "world"})
     resp = assert_status(200, KV1.read(client, "kvv1", path))
-
-    assert %{
-             "auth" => nil,
-             "data" => %{"hello" => "world"}
-           } = resp.body
+    assert resp.logical.data == %{"hello" => "world"}
   end
 
   test "read missing", %{client: client} do
     path = TestHelpers.randkey()
-    resp = assert_status(404, KV1.read(client, "kvv1", path))
-    assert resp.body == %{"errors" => []}
+    assert_error(404, [], KV1.read(client, "kvv1", path))
   end
 
   test "delete", %{client: client} do
@@ -82,11 +81,7 @@ defmodule ExVault.KV1Test do
     path = TestHelpers.randkey()
     writekey(client, path, %{"hello" => "world"})
     resp = assert_status(200, KV1.list(client, "kvv1", ""))
-
-    assert %{
-             "auth" => nil,
-             "data" => %{"keys" => [path]}
-           } = resp.body
+    assert resp.logical.data == %{"keys" => [path]}
   end
 
   test "list subfolder", %{client: client} do
@@ -96,13 +91,12 @@ defmodule ExVault.KV1Test do
     writekey(client, "#{path}/k3/c1", %{"blue" => "sky"})
     writekey(client, "#{path}/k3/c2", %{"green" => "field"})
     resp = assert_status(200, KV1.list(client, "kvv1", path))
-    assert %{"auth" => nil, "data" => %{"keys" => keys}} = resp.body
+    assert %{"keys" => keys} = resp.logical.data
     assert Enum.sort(keys) == ["k1", "k2", "k3/"]
   end
 
   test "list missing", %{client: client} do
     path = TestHelpers.randkey()
-    assert {:ok, %{status: 404}} = KV1.read(client, "kvv1", path)
-    assert {:ok, %{status: 404}} = KV1.list(client, "kvv1", path)
+    assert_error(404, [], KV1.list(client, "kvv1", path))
   end
 end
