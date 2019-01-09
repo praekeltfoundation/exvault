@@ -11,7 +11,7 @@ jobs:
   include:
     - script:
         # This is basically `mix test` with coverage enabled.
-        - VAULT_PATH=$(pwd)/vault mix coveralls.json
+        - VAULT_PATH=$(pwd) mix coveralls.json
         - mix format --check-formatted
         # This will mention FIXME and TODO comments without failing, any other
         # issue fails the build.
@@ -21,7 +21,7 @@ jobs:
     - elixir: '1.6'
       otp_release: '20.3'
       # Only run tests. We do the other checks in the primary build.
-      script: VAULT_PATH=$(pwd)/vault mix test
+      script: VAULT_PATH=$(pwd) mix test
 
     - name: "dialyzer"
       cache:

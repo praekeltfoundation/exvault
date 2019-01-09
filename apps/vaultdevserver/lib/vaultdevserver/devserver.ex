@@ -87,22 +87,42 @@ defmodule VaultDevServer.DevServer do
     end
   end
 
-  defp vault_path_default do
-    case System.get_env("VAULT_PATH") do
+  defp default_executable do
+    case System.get_env("VAULT_EXECUTABLE") do
       nil -> "vault"
-      vault_path -> vault_path
+      vault_executable -> vault_executable
     end
+  end
+
+  defp find_executable(executable) do
+    case System.get_env("VAULT_PATH") do
+      nil -> System.find_executable(executable)
+      vault_path -> Path.join(vault_path, executable)
+    end
+  end
+
+  defp vault_executable(opts) do
+    opts
+    |> Keyword.get(:vault_executable, default_executable())
+    |> find_executable()
+  end
+
+  defp vault_args(opts) do
+    root_token = Keyword.get(opts, :root_token, "root")
+    extra_args = Keyword.get(opts, :extra_args, [])
+    ["server", "-dev", "-dev-root-token-id=#{root_token}" | extra_args]
   end
 
   @impl GenServer
   def init(opts) do
     Process.flag(:trap_exit, true)
-    root_token = Keyword.get(opts, :root_token, "root")
-    vault_path = Keyword.get(opts, :vault_path, vault_path_default())
-    extra_args = Keyword.get(opts, :extra_args, [])
-    cmd = System.find_executable(vault_path)
-    args = ["server", "-dev", "-dev-root-token-id=#{root_token}" | extra_args]
-    port = Port.open({:spawn_executable, cmd}, [:binary, :stderr_to_stdout, args: args])
+
+    port =
+      Port.open(
+        {:spawn_executable, vault_executable(opts)},
+        [:binary, :stderr_to_stdout, args: vault_args(opts)]
+      )
+
     state = State.new(port, self())
 
     case wait_for_startup(state) do
