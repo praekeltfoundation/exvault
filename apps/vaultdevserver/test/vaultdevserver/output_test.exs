@@ -67,10 +67,10 @@ defmodule VaultDevServer.OutputTest do
     test "multiple chunks" do
       newstate()
       |> Output.collect_lines("hello\nwo")
-      |> Output.collect_lines("rld\n")
-      |> Output.collect_lines("my\nname\n\is")
+      |> Output.collect_lines("rld\n\n")
+      |> Output.collect_lines("\nmy\nname\nis")
       |> Output.collect_lines(" ")
-      |> assert_output("is ", ["hello", "world", "my", "name"])
+      |> assert_output("is ", ["hello", "world", "", "", "my", "name"])
     end
   end
 end
