@@ -3,8 +3,6 @@ defmodule ExVault.ResponseTest do
 
   alias ExVault.Response.{Error, Success, Logical}
 
-  # import TestHelpers.Setup, [:client_fake]
-
   setup_all do
     TestHelpers.setup_apps([:hackney, :plug_cowboy, :plug, :cowboy])
   end
@@ -39,7 +37,7 @@ defmodule ExVault.ResponseTest do
 
   test "protocol error" do
     start_tp(&Plug.Conn.send_resp(&1, 204, ""))
-    # Attempting to talk HTTPS to HTTP FakeVault will give us an error.
+    # Attempting to talk HTTPS to an HTTP server will give us an error.
     client = ExVault.new(baseurl: "https://127.0.0.1:#{TesterPlug.port()}/")
 
     assert {:error, _} = mkreq(client)

@@ -4,9 +4,10 @@ defmodule ExVault.KV2Test do
   alias ExVault.KV2
   alias ExVault.Response.Error
 
-  setup_all do
-    TestHelpers.setup_apps([:hackney])
-  end
+  import TestHelpers.Setup, [:client_apps, :devserver, :client]
+
+  setup_all [:client_apps, :devserver]
+  setup [:client, :kvv2_backend]
 
   defp assert_timestamp_since(ts, before) do
     now = DateTime.utc_now()
@@ -18,10 +19,6 @@ defmodule ExVault.KV2Test do
     assert DateTime.compare(time, now) == :lt,
            "Expected timestamp in the past (as of #{now}), got #{ts}"
   end
-
-  import TestHelpers.Setup, [:client_any]
-
-  setup [:client_any, :kvv2_backend]
 
   defp kvv2_backend(%{fake_vault: _}) do
     FakeVault.add_backend("kvv2", FakeVault.KVv2)

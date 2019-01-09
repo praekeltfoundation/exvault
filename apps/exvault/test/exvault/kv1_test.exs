@@ -4,13 +4,10 @@ defmodule ExVault.KV1Test do
   alias ExVault.KV1
   alias ExVault.Response.Error
 
-  import TestHelpers.Setup, [:client_any]
+  import TestHelpers.Setup, [:client_apps, :devserver, :client]
 
-  setup_all do
-    TestHelpers.setup_apps([:hackney])
-  end
-
-  setup [:client_any, :kvv1_backend]
+  setup_all [:client_apps, :devserver]
+  setup [:client, :kvv1_backend]
 
   defp kvv1_backend(%{fake_vault: _}) do
     FakeVault.add_backend("kvv1", FakeVault.KVv1)

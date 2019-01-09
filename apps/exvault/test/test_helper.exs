@@ -36,34 +36,25 @@ defmodule TestHelpers do
     Common setup functions.
     """
 
-    import ExUnit.Assertions
+    alias VaultDevServer.DevServer
 
-    defp assert_env(var) do
-      value = System.get_env(var)
-      assert value != nil, "#{var} environment variable not set"
-      value
+    def client_apps(_ctx) do
+      TestHelpers.setup_apps([:hackney])
     end
 
-    def client_external(_ctx) do
-      baseurl = assert_env("VAULT_ADDR")
-      token = assert_env("VAULT_ROOT_TOKEN")
+    defp start_devserver do
+      {:ok, ds} = start_supervised(DevServer)
+      {ds, DevServer.api_addr(ds), DevServer.root_token(ds)}
+    end
+
+    def devserver(_ctx) do
+      {ds, ds_url, ds_token} = start_devserver()
+      {:ok, devserver: ds, baseurl: ds_url, token: ds_token}
+    end
+
+    def client(%{baseurl: baseurl, token: token}) do
       client = ExVault.new(baseurl: baseurl, token: token)
       {:ok, client: client}
-    end
-
-    def client_fake(_ctx) do
-      TestHelpers.setup_apps([:plug_cowboy, :plug, :cowboy])
-      {:ok, fake_vault} = start_supervised(FakeVault.Supervisor)
-      client = ExVault.new(baseurl: FakeVault.base_url(), token: "faketoken")
-      {:ok, fake_vault: fake_vault, client: client}
-    end
-
-    def client_any(ctx) do
-      if System.get_env("EXVAULT_TEST_EXTERNAL") in [nil, "0"] do
-        client_fake(ctx)
-      else
-        client_external(ctx)
-      end
     end
   end
 end
