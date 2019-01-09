@@ -63,8 +63,7 @@ defmodule VaultDevServer.DevServer do
       {:line, line} ->
         {state, line}
     after
-      5000 ->
-        IO.puts(:stderr, "No message in 5 seconds")
+      5000 -> {:error, "Timed out waiting for Vault to start"}
     end
   end
 
@@ -88,33 +87,39 @@ defmodule VaultDevServer.DevServer do
 
         collect_config(state)
     after
-      5000 ->
-        IO.puts(:stderr, "No message in 5 seconds")
+      5000 -> {:error, "Timed out waiting for Vault to start"}
     end
   end
 
-  defp init_lines(state) do
-    {state, @vault_first_line} = receive_first_line(state)
-    collect_config(state)
+  defp wait_for_startup(state) do
+    case receive_first_line(state) do
+      {:error, err} -> {:error, err}
+      {state, @vault_first_line} -> collect_config(state)
+      {_state, line} -> {:error, "Unexpected Vault output: #{line}"}
+    end
+  end
+
+  defp vault_path_default do
+    case System.get_env("VAULT_PATH") do
+      nil -> "vault"
+      vault_path -> vault_path
+    end
   end
 
   @impl GenServer
   def init(opts) do
     Process.flag(:trap_exit, true)
     root_token = Keyword.get(opts, :root_token, "root")
-
-    vault_path_default =
-      case System.get_env("VAULT_PATH") do
-        nil -> "vault"
-        vault_path -> vault_path
-      end
-
-    vault_path = Keyword.get(opts, :vault_path, vault_path_default)
+    vault_path = Keyword.get(opts, :vault_path, vault_path_default())
+    extra_args = Keyword.get(opts, :extra_args, [])
     cmd = System.find_executable(vault_path)
-    args = ["server", "-dev", "-dev-root-token-id=#{root_token}"]
+    args = ["server", "-dev", "-dev-root-token-id=#{root_token}" | extra_args]
     port = Port.open({:spawn_executable, cmd}, [:binary, :stderr_to_stdout, args: args])
-    state = init_lines(State.new(port))
-    {:ok, state}
+
+    case wait_for_startup(State.new(port)) do
+      {:error, err} -> {:stop, err}
+      state -> {:ok, state}
+    end
   end
 
   @impl GenServer
