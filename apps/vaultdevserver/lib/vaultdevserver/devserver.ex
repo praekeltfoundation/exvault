@@ -107,8 +107,8 @@ defmodule VaultDevServer.DevServer do
 
     case wait_for_startup(state) do
       {:error, err} ->
-        # Clean up the subprocess if it's still around.
-        kill_vault(state)
+        # Clean up the subprocess, with an assignment to make dialyzer happy.
+        _ = kill_vault(state)
         {:stop, err}
 
       state ->
@@ -116,12 +116,10 @@ defmodule VaultDevServer.DevServer do
     end
   end
 
-  defp port_pid(info), do: Integer.to_string(info[:os_pid])
-
   defp kill_vault(state) do
     case Port.info(state.port) do
       nil -> nil
-      info -> System.cmd("kill", [port_pid(info)], stderr_to_stdout: true)
+      info -> System.cmd("kill", [to_string(info[:os_pid])], stderr_to_stdout: true)
     end
   end
 
