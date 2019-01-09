@@ -47,7 +47,6 @@ defmodule ExVaultTest do
     end
 
     test "write PUT", %{client: client} do
-      # FIXME: This tests FakeVault rather than the client.
       path = TestHelpers.randkey()
 
       assert {:ok, %{status: 204, body: ""}} =
