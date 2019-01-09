@@ -13,6 +13,7 @@ defmodule ExvaultUmbrella.MixProject do
         "coveralls.json": :test,
         "coveralls.detail": :test,
         credo: :test,
+        format: :test,
         release: :prod
       ],
       dialyzer: dialyzer()

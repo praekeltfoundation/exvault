@@ -1,9 +1,9 @@
-defmodule FakeVault.MixProject do
+defmodule VaultDevServer.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :fakevault,
+      app: :vaultdevserver,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -19,14 +19,12 @@ defmodule FakeVault.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {FakeVault.Application, []}
+      mod: {VaultDevServer.Application, []}
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    [
-      {:plug_cowboy, "~> 2.0"}
-    ]
+    []
   end
 end
