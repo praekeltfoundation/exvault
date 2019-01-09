@@ -32,11 +32,4 @@ defmodule VaultDevServer.DevServerTest do
     assert DevServer.root_token(ds) == "root"
     {:error, {:already_started, ^ds}} = start_supervised(DevServer)
   end
-
-  test "collect_lines" do
-    assert DevServer.collect_lines("") == {[], ""}
-    assert DevServer.collect_lines("aaa") == {[], "aaa"}
-    assert DevServer.collect_lines("aaa\n") == {["aaa"], ""}
-    assert DevServer.collect_lines("aaa\nccc\nddd") == {["ccc", "aaa"], "ddd"}
-  end
 end
