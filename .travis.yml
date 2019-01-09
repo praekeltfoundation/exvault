@@ -2,9 +2,10 @@ language: elixir
 elixir: '1.7'
 otp_release: '21.2'
 
-before_script:
-  - wget https://releases.hashicorp.com/vault/1.0.1/vault_1.0.1_linux_amd64.zip
-  - unzip vault_1.0.1_linux_amd64.zip
+env:
+  - VAULT_VERSION=1.0.1
+
+before_script: .ci/fetch-vault.sh
 
 jobs:
   include:
@@ -29,3 +30,8 @@ jobs:
           - $HOME/.pltcache
       before_script: travis_wait .ci/build-plt-cache.sh
       script: mix dialyzer --halt-exit-status
+
+# We already have PR builds, so don't build PR branches as well.
+branches:
+  only:
+    - master
