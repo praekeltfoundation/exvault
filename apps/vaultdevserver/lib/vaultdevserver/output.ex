@@ -5,6 +5,9 @@ defmodule VaultDevServer.Output do
 
   defstruct dest_pid: nil, buf: ""
 
+  @type t :: %__MODULE__{dest_pid: pid(), buf: String.t()}
+
+  @spec new(pid()) :: t()
   def new(dest_pid), do: %__MODULE__{dest_pid: dest_pid}
 
   defp read_line(buf), do: String.split(buf, "\n", parts: 2)
@@ -16,5 +19,6 @@ defmodule VaultDevServer.Output do
     read_lines(state, read_line(buf))
   end
 
+  @spec collect_lines(t(), String.t()) :: t()
   def collect_lines(state, buf), do: read_lines(state, read_line(state.buf <> buf))
 end

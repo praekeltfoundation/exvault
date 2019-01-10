@@ -37,8 +37,10 @@ defmodule VaultDevServer.DevServer do
     GenServer.start_link(__MODULE__, args)
   end
 
+  @spec api_addr(GenServer.server()) :: String.t()
   def api_addr(ds), do: GenServer.call(ds, :api_addr)
 
+  @spec root_token(GenServer.server()) :: String.t()
   def root_token(ds), do: GenServer.call(ds, :root_token)
 
   # Collect raw output from the subprocess and feed it to the output processor.
