@@ -12,6 +12,7 @@ defmodule ExVault do
   @adapter Tesla.Adapter.Hackney
 
   @type client :: Tesla.Client.t()
+  @type body :: Tesla.Env.body()
   @type response :: Response.t()
 
   @spec new(keyword()) :: client()
@@ -34,7 +35,7 @@ defmodule ExVault do
     |> Response.parse_response()
   end
 
-  @spec write(client(), String.t(), String.t(), any()) :: Response.t()
+  @spec write(client(), String.t(), String.t(), body()) :: Response.t()
   def write(client, mount, path, params) do
     client
     |> Tesla.post("/v1/#{mount}/#{path}", params)
