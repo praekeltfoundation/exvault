@@ -5,6 +5,7 @@ defmodule ExVault.KV2 do
 
   # TODO: config
 
+  @spec get_data(ExVault.client(), String.t(), String.t(), keyword()) :: ExVault.response()
   def get_data(client, mount, path, opts \\ []) do
     query =
       case Keyword.get(opts, :version) do
@@ -15,6 +16,7 @@ defmodule ExVault.KV2 do
     ExVault.read(client, mount, "data/" <> path, query: query)
   end
 
+  @spec put_data(ExVault.client(), String.t(), String.t(), map(), keyword()) :: ExVault.response()
   def put_data(client, mount, path, data, opts \\ []) do
     # TODO: cas
     ExVault.write(client, mount, "data/" <> path, %{"data" => data})
