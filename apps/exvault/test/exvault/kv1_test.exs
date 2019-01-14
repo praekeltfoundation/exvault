@@ -10,8 +10,8 @@ defmodule ExVault.KV1Test do
   setup [:client, :kvv1_backend]
 
   defp kvv1_backend(%{client: client}) do
-    ExVault.write(client, "sys/mounts", "kvv1", %{"type" => "kv", "options" => %{"version" => 1}})
-    on_exit(fn -> ExVault.delete(client, "sys/mounts", "kvv1") end)
+    ExVault.write(client, "sys/mounts/kvv1", %{"type" => "kv", "options" => %{"version" => 1}})
+    on_exit(fn -> ExVault.delete(client, "sys/mounts/kvv1") end)
     :ok
   end
 

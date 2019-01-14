@@ -13,13 +13,13 @@ defmodule ExVault.KV2 do
         v -> [version: v]
       end
 
-    ExVault.read(client, mount, "data/" <> path, query: query)
+    ExVault.read(client, "#{mount}/data/#{path}", query: query)
   end
 
   @spec put_data(ExVault.client(), String.t(), String.t(), map(), keyword()) :: ExVault.response()
   def put_data(client, mount, path, data, opts \\ []) do
     # TODO: cas
-    ExVault.write(client, mount, "data/" <> path, %{"data" => data})
+    ExVault.write(client, "#{mount}/data/#{path}", %{"data" => data})
   end
 
   # TODO: delete
