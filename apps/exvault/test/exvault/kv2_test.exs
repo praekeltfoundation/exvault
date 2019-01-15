@@ -37,106 +37,221 @@ defmodule ExVault.KV2Test do
   end
 
   defp put_version(client, path, value),
-    do: assert_status(200, KV2.put_data(client, "kvv2", path, value)).logical.data
+    do: assert_status(200, KV2.put_data(client, "kvv2", path, value, [])).logical.data
 
-  # TODO: config
+  describe "backend" do
+    test "new", %{client: client} do
+      assert KV2.new(client, "mount") == %KV2{client: client, mount: "mount"}
+      assert KV2.new(client, "hill") == %KV2{client: client, mount: "hill"}
+    end
 
-  test "put_data new", %{client: client} do
-    path = TestHelpers.randkey()
-    before = DateTime.utc_now()
-    resp = assert_status(200, KV2.put_data(client, "kvv2", path, %{"hello" => "world"}))
+    # TODO: config
 
-    assert %{
-             "created_time" => ctime,
-             "deletion_time" => "",
-             "destroyed" => false,
-             "version" => 1
-           } = resp.logical.data
+    test "put_data new", %{client: client} do
+      path = TestHelpers.randkey()
+      backend = KV2.new(client, "kvv2")
+      before = DateTime.utc_now()
+      resp = assert_status(200, KV2.put_data(backend, path, %{"hello" => "world"}))
 
-    assert_timestamp_since(ctime, before)
-  end
-
-  test "put_data update", %{client: client} do
-    path = TestHelpers.randkey()
-    assert put_version(client, path, %{"hello" => "world"})["version"] == 1
-    before = DateTime.utc_now()
-    resp = assert_status(200, KV2.put_data(client, "kvv2", path, %{"hello" => "universe"}))
-
-    assert %{
-             "created_time" => ctime,
-             "deletion_time" => "",
-             "destroyed" => false,
-             "version" => 2
-           } = resp.logical.data
-
-    assert_timestamp_since(ctime, before)
-  end
-
-  test "read latest", %{client: client} do
-    path = TestHelpers.randkey()
-
-    ctime1 = put_version(client, path, %{"hello" => "world"})["created_time"]
-    resp = assert_status(200, KV2.get_data(client, "kvv2", path))
-
-    assert %{
-             "data" => %{"hello" => "world"},
-             "metadata" => %{
-               "created_time" => ^ctime1,
+      assert %{
+               "created_time" => ctime,
                "deletion_time" => "",
                "destroyed" => false,
                "version" => 1
-             }
-           } = resp.logical.data
+             } = resp.logical.data
 
-    ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
-    resp = assert_status(200, KV2.get_data(client, "kvv2", path))
+      assert_timestamp_since(ctime, before)
+    end
 
-    assert %{
-             "data" => %{"hello" => "universe"},
-             "metadata" => %{
-               "created_time" => ^ctime2,
+    test "put_data update", %{client: client} do
+      path = TestHelpers.randkey()
+      backend = KV2.new(client, "kvv2")
+      assert put_version(client, path, %{"hello" => "world"})["version"] == 1
+      before = DateTime.utc_now()
+      resp = assert_status(200, KV2.put_data(backend, path, %{"hello" => "universe"}))
+
+      assert %{
+               "created_time" => ctime,
                "deletion_time" => "",
                "destroyed" => false,
                "version" => 2
-             }
-           } = resp.logical.data
+             } = resp.logical.data
+
+      assert_timestamp_since(ctime, before)
+    end
+
+    test "read latest", %{client: client} do
+      path = TestHelpers.randkey()
+      backend = KV2.new(client, "kvv2")
+
+      ctime1 = put_version(client, path, %{"hello" => "world"})["created_time"]
+      resp = assert_status(200, KV2.get_data(backend, path))
+
+      assert %{
+               "data" => %{"hello" => "world"},
+               "metadata" => %{
+                 "created_time" => ^ctime1,
+                 "deletion_time" => "",
+                 "destroyed" => false,
+                 "version" => 1
+               }
+             } = resp.logical.data
+
+      ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
+      resp = assert_status(200, KV2.get_data(backend, path))
+
+      assert %{
+               "data" => %{"hello" => "universe"},
+               "metadata" => %{
+                 "created_time" => ^ctime2,
+                 "deletion_time" => "",
+                 "destroyed" => false,
+                 "version" => 2
+               }
+             } = resp.logical.data
+    end
+
+    test "read version", %{client: client} do
+      path = TestHelpers.randkey()
+      backend = KV2.new(client, "kvv2")
+
+      ctime1 = put_version(client, path, %{"hello" => "world"})["created_time"]
+      ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
+
+      resp = assert_status(200, KV2.get_data(backend, path, version: 1))
+
+      assert %{
+               "data" => %{"hello" => "world"},
+               "metadata" => %{
+                 "created_time" => ^ctime1,
+                 "deletion_time" => "",
+                 "destroyed" => false,
+                 "version" => 1
+               }
+             } = resp.logical.data
+
+      resp = assert_status(200, KV2.get_data(backend, path, version: 2))
+
+      assert %{
+               "data" => %{"hello" => "universe"},
+               "metadata" => %{
+                 "created_time" => ^ctime2,
+                 "deletion_time" => "",
+                 "destroyed" => false,
+                 "version" => 2
+               }
+             } = resp.logical.data
+
+      assert_error(404, [], KV2.get_data(backend, path, version: 3))
+    end
+
+    test "read missing", %{client: client} do
+      path = TestHelpers.randkey()
+      backend = KV2.new(client, "kvv2")
+      assert_error(404, [], KV2.get_data(backend, path))
+    end
   end
 
-  test "read version", %{client: client} do
-    path = TestHelpers.randkey()
+  describe "client+mount" do
+    # TODO: config
 
-    ctime1 = put_version(client, path, %{"hello" => "world"})["created_time"]
-    ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
+    test "put_data new", %{client: client} do
+      path = TestHelpers.randkey()
+      before = DateTime.utc_now()
+      resp = assert_status(200, KV2.put_data(client, "kvv2", path, %{"hello" => "world"}, []))
 
-    resp = assert_status(200, KV2.get_data(client, "kvv2", path, version: 1))
-
-    assert %{
-             "data" => %{"hello" => "world"},
-             "metadata" => %{
-               "created_time" => ^ctime1,
+      assert %{
+               "created_time" => ctime,
                "deletion_time" => "",
                "destroyed" => false,
                "version" => 1
-             }
-           } = resp.logical.data
+             } = resp.logical.data
 
-    resp = assert_status(200, KV2.get_data(client, "kvv2", path, version: 2))
+      assert_timestamp_since(ctime, before)
+    end
 
-    assert %{
-             "data" => %{"hello" => "universe"},
-             "metadata" => %{
-               "created_time" => ^ctime2,
+    test "put_data update", %{client: client} do
+      path = TestHelpers.randkey()
+      assert put_version(client, path, %{"hello" => "world"})["version"] == 1
+      before = DateTime.utc_now()
+      resp = assert_status(200, KV2.put_data(client, "kvv2", path, %{"hello" => "universe"}, []))
+
+      assert %{
+               "created_time" => ctime,
                "deletion_time" => "",
                "destroyed" => false,
                "version" => 2
-             }
-           } = resp.logical.data
+             } = resp.logical.data
 
-    assert_error(404, [], KV2.get_data(client, "kvv2", path, version: 3))
-  end
+      assert_timestamp_since(ctime, before)
+    end
 
-  test "read missing", %{client: client} do
-    path = TestHelpers.randkey()
-    assert_error(404, [], KV2.get_data(client, "kvv2", path))
+    test "read latest", %{client: client} do
+      path = TestHelpers.randkey()
+
+      ctime1 = put_version(client, path, %{"hello" => "world"})["created_time"]
+      resp = assert_status(200, KV2.get_data(client, "kvv2", path, []))
+
+      assert %{
+               "data" => %{"hello" => "world"},
+               "metadata" => %{
+                 "created_time" => ^ctime1,
+                 "deletion_time" => "",
+                 "destroyed" => false,
+                 "version" => 1
+               }
+             } = resp.logical.data
+
+      ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
+      resp = assert_status(200, KV2.get_data(client, "kvv2", path, []))
+
+      assert %{
+               "data" => %{"hello" => "universe"},
+               "metadata" => %{
+                 "created_time" => ^ctime2,
+                 "deletion_time" => "",
+                 "destroyed" => false,
+                 "version" => 2
+               }
+             } = resp.logical.data
+    end
+
+    test "read version", %{client: client} do
+      path = TestHelpers.randkey()
+
+      ctime1 = put_version(client, path, %{"hello" => "world"})["created_time"]
+      ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
+
+      resp = assert_status(200, KV2.get_data(client, "kvv2", path, version: 1))
+
+      assert %{
+               "data" => %{"hello" => "world"},
+               "metadata" => %{
+                 "created_time" => ^ctime1,
+                 "deletion_time" => "",
+                 "destroyed" => false,
+                 "version" => 1
+               }
+             } = resp.logical.data
+
+      resp = assert_status(200, KV2.get_data(client, "kvv2", path, version: 2))
+
+      assert %{
+               "data" => %{"hello" => "universe"},
+               "metadata" => %{
+                 "created_time" => ^ctime2,
+                 "deletion_time" => "",
+                 "destroyed" => false,
+                 "version" => 2
+               }
+             } = resp.logical.data
+
+      assert_error(404, [], KV2.get_data(client, "kvv2", path, version: 3))
+    end
+
+    test "read missing", %{client: client} do
+      path = TestHelpers.randkey()
+      assert_error(404, [], KV2.get_data(client, "kvv2", path, []))
+    end
   end
 end
