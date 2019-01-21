@@ -2,7 +2,7 @@ defmodule ExVault.KV2Test do
   use ExUnit.Case
 
   alias ExVault.KV2
-  alias ExVault.Response.Error
+  alias ExVault.Response.{Error, Logical, Success}
 
   import TestHelpers.Setup, [:client_apps, :devserver, :client]
 
@@ -38,6 +38,17 @@ defmodule ExVault.KV2Test do
 
   defp put_version(client, path, value),
     do: assert_status(200, KV2.put_data(client, "kvv2", path, value, [])).logical.data
+
+  defp assert_get_data(resp, data: data, metadata: metadata) do
+    logicaldata = %{"data" => data, "metadata" => metadata}
+
+    assert {:ok,
+            %KV2.GetData{
+              data: ^data,
+              metadata: ^metadata,
+              resp: %Success{logical: %Logical{data: ^logicaldata}}
+            }} = resp
+  end
 
   describe "backend" do
     test "new", %{client: client} do
@@ -85,30 +96,28 @@ defmodule ExVault.KV2Test do
       backend = KV2.new(client, "kvv2")
 
       ctime1 = put_version(client, path, %{"hello" => "world"})["created_time"]
-      resp = assert_status(200, KV2.get_data(backend, path))
 
-      assert %{
-               "data" => %{"hello" => "world"},
-               "metadata" => %{
-                 "created_time" => ^ctime1,
-                 "deletion_time" => "",
-                 "destroyed" => false,
-                 "version" => 1
-               }
-             } = resp.logical.data
+      assert_get_data(KV2.get_data(backend, path),
+        data: %{"hello" => "world"},
+        metadata: %{
+          "created_time" => ctime1,
+          "deletion_time" => "",
+          "destroyed" => false,
+          "version" => 1
+        }
+      )
 
       ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
-      resp = assert_status(200, KV2.get_data(backend, path))
 
-      assert %{
-               "data" => %{"hello" => "universe"},
-               "metadata" => %{
-                 "created_time" => ^ctime2,
-                 "deletion_time" => "",
-                 "destroyed" => false,
-                 "version" => 2
-               }
-             } = resp.logical.data
+      assert_get_data(KV2.get_data(backend, path),
+        data: %{"hello" => "universe"},
+        metadata: %{
+          "created_time" => ctime2,
+          "deletion_time" => "",
+          "destroyed" => false,
+          "version" => 2
+        }
+      )
     end
 
     test "read version", %{client: client} do
@@ -118,29 +127,25 @@ defmodule ExVault.KV2Test do
       ctime1 = put_version(client, path, %{"hello" => "world"})["created_time"]
       ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
 
-      resp = assert_status(200, KV2.get_data(backend, path, version: 1))
+      assert_get_data(KV2.get_data(backend, path, version: 1),
+        data: %{"hello" => "world"},
+        metadata: %{
+          "created_time" => ctime1,
+          "deletion_time" => "",
+          "destroyed" => false,
+          "version" => 1
+        }
+      )
 
-      assert %{
-               "data" => %{"hello" => "world"},
-               "metadata" => %{
-                 "created_time" => ^ctime1,
-                 "deletion_time" => "",
-                 "destroyed" => false,
-                 "version" => 1
-               }
-             } = resp.logical.data
-
-      resp = assert_status(200, KV2.get_data(backend, path, version: 2))
-
-      assert %{
-               "data" => %{"hello" => "universe"},
-               "metadata" => %{
-                 "created_time" => ^ctime2,
-                 "deletion_time" => "",
-                 "destroyed" => false,
-                 "version" => 2
-               }
-             } = resp.logical.data
+      assert_get_data(KV2.get_data(backend, path, version: 2),
+        data: %{"hello" => "universe"},
+        metadata: %{
+          "created_time" => ctime2,
+          "deletion_time" => "",
+          "destroyed" => false,
+          "version" => 2
+        }
+      )
 
       assert_error(404, [], KV2.get_data(backend, path, version: 3))
     end
@@ -190,30 +195,28 @@ defmodule ExVault.KV2Test do
       path = TestHelpers.randkey()
 
       ctime1 = put_version(client, path, %{"hello" => "world"})["created_time"]
-      resp = assert_status(200, KV2.get_data(client, "kvv2", path, []))
 
-      assert %{
-               "data" => %{"hello" => "world"},
-               "metadata" => %{
-                 "created_time" => ^ctime1,
-                 "deletion_time" => "",
-                 "destroyed" => false,
-                 "version" => 1
-               }
-             } = resp.logical.data
+      assert_get_data(KV2.get_data(client, "kvv2", path, []),
+        data: %{"hello" => "world"},
+        metadata: %{
+          "created_time" => ctime1,
+          "deletion_time" => "",
+          "destroyed" => false,
+          "version" => 1
+        }
+      )
 
       ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
-      resp = assert_status(200, KV2.get_data(client, "kvv2", path, []))
 
-      assert %{
-               "data" => %{"hello" => "universe"},
-               "metadata" => %{
-                 "created_time" => ^ctime2,
-                 "deletion_time" => "",
-                 "destroyed" => false,
-                 "version" => 2
-               }
-             } = resp.logical.data
+      assert_get_data(KV2.get_data(client, "kvv2", path, []),
+        data: %{"hello" => "universe"},
+        metadata: %{
+          "created_time" => ctime2,
+          "deletion_time" => "",
+          "destroyed" => false,
+          "version" => 2
+        }
+      )
     end
 
     test "read version", %{client: client} do
@@ -222,29 +225,25 @@ defmodule ExVault.KV2Test do
       ctime1 = put_version(client, path, %{"hello" => "world"})["created_time"]
       ctime2 = put_version(client, path, %{"hello" => "universe"})["created_time"]
 
-      resp = assert_status(200, KV2.get_data(client, "kvv2", path, version: 1))
+      assert_get_data(KV2.get_data(client, "kvv2", path, version: 1),
+        data: %{"hello" => "world"},
+        metadata: %{
+          "created_time" => ctime1,
+          "deletion_time" => "",
+          "destroyed" => false,
+          "version" => 1
+        }
+      )
 
-      assert %{
-               "data" => %{"hello" => "world"},
-               "metadata" => %{
-                 "created_time" => ^ctime1,
-                 "deletion_time" => "",
-                 "destroyed" => false,
-                 "version" => 1
-               }
-             } = resp.logical.data
-
-      resp = assert_status(200, KV2.get_data(client, "kvv2", path, version: 2))
-
-      assert %{
-               "data" => %{"hello" => "universe"},
-               "metadata" => %{
-                 "created_time" => ^ctime2,
-                 "deletion_time" => "",
-                 "destroyed" => false,
-                 "version" => 2
-               }
-             } = resp.logical.data
+      assert_get_data(KV2.get_data(client, "kvv2", path, version: 2),
+        data: %{"hello" => "universe"},
+        metadata: %{
+          "created_time" => ctime2,
+          "deletion_time" => "",
+          "destroyed" => false,
+          "version" => 2
+        }
+      )
 
       assert_error(404, [], KV2.get_data(client, "kvv2", path, version: 3))
     end

@@ -19,15 +19,32 @@ defmodule ExVault.KV2 do
 
   # TODO: config
 
+  defmodule GetData do
+    @moduledoc """
+    `ExVault.KV2.get_data` response struct.
+    """
+
+    defstruct [:resp, :data, :metadata]
+
+    def mkresp({:ok, resp = %ExVault.Response.Success{}}),
+      do:
+        {:ok,
+         %__MODULE__{
+           resp: resp,
+           data: resp.logical.data["data"],
+           metadata: resp.logical.data["metadata"]
+         }}
+
+    def mkresp(resp), do: resp
+  end
+
   @spec get_data(ExVault.client(), String.t(), String.t(), keyword()) :: ExVault.response()
   def get_data(client, mount, path, opts) do
-    query =
-      case Keyword.get(opts, :version) do
-        nil -> []
-        v -> [version: v]
-      end
+    query = Keyword.take(opts, [:version])
 
-    ExVault.read(client, "#{mount}/data/#{path}", query: query)
+    client
+    |> ExVault.read("#{mount}/data/#{path}", query: query)
+    |> GetData.mkresp()
   end
 
   @spec get_data(t(), String.t(), keyword()) :: ExVault.response()
