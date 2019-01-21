@@ -24,15 +24,17 @@ defmodule ExVault.KV2 do
     `ExVault.KV2.get_data` response struct.
     """
 
+    alias ExVault.Response.{Logical, Success}
+
     defstruct [:resp, :data, :metadata]
 
-    def mkresp({:ok, resp = %ExVault.Response.Success{}}),
+    def mkresp({:ok, resp = %Success{logical: %Logical{data: data}}}),
       do:
         {:ok,
          %__MODULE__{
            resp: resp,
-           data: resp.logical.data["data"],
-           metadata: resp.logical.data["metadata"]
+           data: data["data"],
+           metadata: data["metadata"]
          }}
 
     def mkresp(resp), do: resp
