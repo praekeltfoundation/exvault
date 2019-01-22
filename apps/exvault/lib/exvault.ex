@@ -28,31 +28,31 @@ defmodule ExVault do
     Tesla.client(middleware, adapter)
   end
 
-  @spec read(client(), String.t(), String.t(), keyword()) :: Response.t()
-  def read(client, mount, path, opts \\ []) do
+  @spec read(client(), String.t(), keyword()) :: Response.t()
+  def read(client, path, opts \\ []) do
     client
-    |> Tesla.get("/v1/#{mount}/#{path}", opts)
+    |> Tesla.get("/v1/#{path}", opts)
     |> Response.parse_response()
   end
 
-  @spec write(client(), String.t(), String.t(), body()) :: Response.t()
-  def write(client, mount, path, params) do
+  @spec write(client(), String.t(), body()) :: Response.t()
+  def write(client, path, params) do
     client
-    |> Tesla.post("/v1/#{mount}/#{path}", params)
+    |> Tesla.post("/v1/#{path}", params)
     |> Response.parse_response()
   end
 
-  @spec delete(client(), String.t(), String.t()) :: Response.t()
-  def delete(client, mount, path) do
+  @spec delete(client(), String.t()) :: Response.t()
+  def delete(client, path) do
     client
-    |> Tesla.request(url: "/v1/#{mount}/#{path}", method: "DELETE")
+    |> Tesla.request(url: "/v1/#{path}", method: "DELETE")
     |> Response.parse_response()
   end
 
-  @spec list(client(), String.t(), String.t()) :: Response.t()
-  def list(client, mount, path) do
+  @spec list(client(), String.t()) :: Response.t()
+  def list(client, path) do
     client
-    |> Tesla.request(url: "/v1/#{mount}/#{path}", method: "LIST")
+    |> Tesla.request(url: "/v1/#{path}", method: "LIST")
     |> Response.parse_response()
   end
 end

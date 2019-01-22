@@ -33,7 +33,7 @@ defmodule ExVault.ResponseTest do
 
   defp start_tp(plugfn), do: {:ok, _} = start_supervised(TesterPlug.child_spec(plugfn))
 
-  defp mkreq(client), do: ExVault.read(client, "mnt", "path")
+  defp mkreq(client), do: ExVault.read(client, "mnt/path")
 
   test "protocol error" do
     start_tp(&Plug.Conn.send_resp(&1, 204, ""))
