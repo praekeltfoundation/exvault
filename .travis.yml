@@ -1,5 +1,5 @@
 language: elixir
-elixir: '1.7'
+elixir: '1.8'
 otp_release: '21.2'
 
 env:
@@ -20,6 +20,10 @@ jobs:
 
     - elixir: '1.6'
       otp_release: '20.3'
+      # Only run tests. We do the other checks in the primary build.
+      script: VAULT_PATH=$(pwd) mix test
+
+    - elixir: '1.7'
       # Only run tests. We do the other checks in the primary build.
       script: VAULT_PATH=$(pwd) mix test
 
