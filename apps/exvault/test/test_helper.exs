@@ -49,11 +49,11 @@ defmodule TestHelpers do
 
     def devserver(_ctx) do
       {ds, ds_url, ds_token} = start_devserver()
-      {:ok, devserver: ds, baseurl: ds_url, token: ds_token}
+      {:ok, devserver: ds, address: ds_url, token: ds_token}
     end
 
-    def client(%{baseurl: baseurl, token: token}) do
-      client = ExVault.new(baseurl: baseurl, token: token)
+    def client(%{address: address, token: token}) do
+      client = ExVault.new(address: address, token: token)
       {:ok, client: client}
     end
   end

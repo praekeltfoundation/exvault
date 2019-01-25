@@ -12,7 +12,7 @@ defmodule ExVault do
   @adapter Tesla.Adapter.Hackney
 
   @type option() ::
-          {:baseurl, String.t()}
+          {:address, String.t()}
           | {:token, String.t()}
           | {:adapter, Tesla.Client.adapter()}
 
@@ -24,7 +24,7 @@ defmodule ExVault do
   Create a new `ExVault` client.
 
   Options:
-   * `:baseurl` - The base URL of the Vault server to talk to. (Required)
+   * `:address` - The base URL of the Vault server to talk to. (Required)
    * `:token` - The Vault token to authenticate with. If not provided, any
      calls requiring authentication will fail.
    * `:adapter` - The Tesla adapter to use. Defaults to
@@ -35,7 +35,7 @@ defmodule ExVault do
   def new(opts) do
     middleware =
       [
-        {Tesla.Middleware.BaseUrl, opts[:baseurl]},
+        {Tesla.Middleware.BaseUrl, opts[:address]},
         {Tesla.Middleware.Headers, [{"X-Vault-Token", opts[:token]}]}
       ] ++ @middleware
 

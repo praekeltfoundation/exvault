@@ -38,35 +38,35 @@ defmodule ExVault.ResponseTest do
   test "protocol error" do
     start_tp(&Plug.Conn.send_resp(&1, 204, ""))
     # Attempting to talk HTTPS to an HTTP server will give us an error.
-    client = ExVault.new(baseurl: "https://127.0.0.1:#{TesterPlug.port()}/")
+    client = ExVault.new(address: "https://127.0.0.1:#{TesterPlug.port()}/")
 
     assert {:error, _} = mkreq(client)
   end
 
   test "error response" do
     start_tp(&json_resp(&1, 400, %{"errors" => ["err1", "err2"]}))
-    client = ExVault.new(baseurl: TesterPlug.url())
+    client = ExVault.new(address: TesterPlug.url())
 
     assert {:ok, %Error{status: 400, errors: ["err1", "err2"]}} = mkreq(client)
   end
 
   test "success 204" do
     start_tp(&Plug.Conn.send_resp(&1, 204, ""))
-    client = ExVault.new(baseurl: TesterPlug.url())
+    client = ExVault.new(address: TesterPlug.url())
 
     assert {:ok, %Success{status: 204, body: "", logical: nil}} = mkreq(client)
   end
 
   test "success non-json" do
     start_tp(&Plug.Conn.send_resp(&1, 200, "some stuff"))
-    client = ExVault.new(baseurl: TesterPlug.url())
+    client = ExVault.new(address: TesterPlug.url())
 
     assert {:ok, %Success{status: 200, body: "some stuff", logical: nil}} = mkreq(client)
   end
 
   test "success non-logical json" do
     start_tp(&json_resp(&1, 200, %{"some" => "json"}))
-    client = ExVault.new(baseurl: TesterPlug.url())
+    client = ExVault.new(address: TesterPlug.url())
 
     assert {:ok, %Success{status: 200, body: %{"some" => "json"}, logical: nil}} = mkreq(client)
   end
@@ -84,7 +84,7 @@ defmodule ExVault.ResponseTest do
     }
 
     start_tp(&json_resp(&1, 200, body))
-    client = ExVault.new(baseurl: TesterPlug.url())
+    client = ExVault.new(address: TesterPlug.url())
 
     assert {:ok, %Success{status: 200, body: ^body, logical: logical}} = mkreq(client)
 
