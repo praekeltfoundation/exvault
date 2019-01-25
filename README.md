@@ -1,6 +1,6 @@
 # ExVault
 
-Elixir client library for Hashicorp Vault.
+Elixir client library for HashiCorp Vault.
 
 ## Installation
 
