@@ -24,7 +24,7 @@ defmodule ExVault do
   Create a new `ExVault` client.
 
   Options:
-   * `:baseurl` - The base URL of the Vault server to talk to. (Mandatory)
+   * `:baseurl` - The base URL of the Vault server to talk to. (Required)
    * `:token` - The Vault token to authenticate with. If not provided, any
      calls requiring authentication will fail.
    * `:adapter` - The Tesla adapter to use. Defaults to
