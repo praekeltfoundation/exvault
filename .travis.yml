@@ -1,9 +1,9 @@
 language: elixir
-elixir: '1.7'
+elixir: '1.8'
 otp_release: '21.2'
 
 env:
-  - VAULT_VERSION=1.0.1
+  - VAULT_VERSION=1.0.2
 
 before_script: .ci/fetch-vault.sh
 
@@ -17,6 +17,10 @@ jobs:
         # issue fails the build.
         - mix credo
       after_success: bash <(curl -s https://codecov.io/bash)
+
+    - elixir: '1.7'
+      # Only run tests. We do the other checks in the primary build.
+      script: VAULT_PATH=$(pwd) mix test
 
     - elixir: '1.6'
       otp_release: '20.3'
