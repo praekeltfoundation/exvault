@@ -38,7 +38,9 @@ defmodule ExvaultUmbrella.MixProject do
       {:excoveralls, "~> 0.8", only: :test},
       {:dialyxir, "~> 1.0.0-rc.4", only: :dev, runtime: false},
       {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
+      # Doc tools.
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
+      {:inch_ex, only: :dev, runtime: false}
     ]
   end
 

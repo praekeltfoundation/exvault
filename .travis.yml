@@ -16,6 +16,8 @@ jobs:
         # This will mention FIXME and TODO comments without failing, any other
         # issue fails the build.
         - mix credo
+        # Only print to the log for now. We can set up inch-ci.org later.
+        - mix inch
       after_success: bash <(curl -s https://codecov.io/bash)
 
     # Skip Elixir 1.7 while we don't have many parallel builds
