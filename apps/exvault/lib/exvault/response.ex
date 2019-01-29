@@ -2,8 +2,9 @@ defmodule ExVault.Response do
   @moduledoc """
   Structs for the most common Vault API response formats.
 
-  Vault does have a handful of APIs with responses that don't fit any of these,
-  but the documentation isn't particularly clear about what those are.
+  Generally, the data of a response is available in a `ExVault.Response.Logical`
+  struct wrapped in a `ExVault.Response.Success` struct. Errors are represented
+  with the `ExVault.Response.Error` struct.
   """
 
   defmodule Error do
@@ -28,7 +29,8 @@ defmodule ExVault.Response do
     @moduledoc """
     Vault API success response. This represents an HTTP 2xx response.
 
-    Usually, the `logical` field will contain a `Response.Logical` struct.
+    Usually, the `logical` field will contain a `ExVault.Response.Logical`
+    struct.
     """
 
     alias ExVault.Response.Logical
@@ -54,6 +56,9 @@ defmodule ExVault.Response do
   defmodule Logical do
     @moduledoc """
     Vault API "logical" response. Most Vault APIs return one of these.
+
+    This is based on [this](https://godoc.org/github.com/hashicorp/vault/logical#HTTPResponse)
+    Golang struct in the official Vault client.
     """
 
     defstruct [
