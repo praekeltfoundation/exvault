@@ -14,7 +14,6 @@ defmodule ExvaultUmbrella.MixProject do
         "coveralls.detail": :test,
         credo: :test,
         format: :test,
-        inch: :test,
         release: :prod
       ],
       dialyzer: dialyzer()
@@ -41,7 +40,7 @@ defmodule ExvaultUmbrella.MixProject do
       {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false},
       # Doc tools.
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-      {:inch_ex, only: [:dev, :test], runtime: false}
+      {:inch_ex, only: :dev, runtime: false}
     ]
   end
 
