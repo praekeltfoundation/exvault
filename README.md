@@ -29,7 +29,7 @@ end
 
 Start by creating a client with an API URL and an authentication token:
 ```elixir
-client = ExVault.new(baseurl: "https://127.0.0.1:8200", token: "abcd-1234")
+client = ExVault.new(address: "https://127.0.0.1:8200", token: "abcd-1234")
 ```
 
 This client can then be used to make various API calls. Assuming a v1 key-value
