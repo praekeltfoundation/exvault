@@ -19,6 +19,7 @@ defmodule ExVault.Response do
             errors: [String.t()]
           }
 
+    @doc false
     @spec from_resp(Tesla.Env.t()) :: t()
     def from_resp(%{status: status, body: %{"errors" => errors}}) do
       %__MODULE__{status: status, errors: errors}
@@ -43,6 +44,7 @@ defmodule ExVault.Response do
             logical: Logical.t() | nil
           }
 
+    @doc false
     @spec from_resp(Tesla.Env.t()) :: t()
     def from_resp(%{status: status, body: body}) do
       %__MODULE__{
@@ -85,6 +87,7 @@ defmodule ExVault.Response do
             auth: nil
           }
 
+    @doc false
     @spec from_body(Tesla.Env.body()) :: t() | nil
     def from_body(%{
           "request_id" => request_id,
@@ -113,6 +116,7 @@ defmodule ExVault.Response do
 
   @type t :: {:ok, Error.t() | Success.t()} | {:error, any()}
 
+  @doc false
   @spec parse_response(Tesla.Env.result()) :: t()
   def parse_response({:ok, %{status: status} = resp}) when status >= 400,
     do: {:ok, Error.from_resp(resp)}

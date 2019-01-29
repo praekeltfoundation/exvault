@@ -41,6 +41,7 @@ defmodule ExVault.KV2 do
 
     defstruct [:resp, :data, :metadata]
 
+    @doc false
     def mkresp({:ok, resp = %Success{logical: %Logical{data: data}}}),
       do:
         {:ok,
