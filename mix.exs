@@ -40,7 +40,7 @@ defmodule ExvaultUmbrella.MixProject do
       {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false},
       # Doc tools.
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-      {:inch_ex, only: :dev, runtime: false}
+      {:inch_ex, "~> 2.0", only: :dev, runtime: false}
     ]
   end
 
