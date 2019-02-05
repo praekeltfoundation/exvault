@@ -34,12 +34,28 @@ defmodule ExVault.KV2 do
 
   defmodule GetData do
     @moduledoc """
-    `ExVault.KV2.get_data` response struct.
+    Response struct for the data returned by the `kv` version 2 secrets engine.
     """
 
     alias ExVault.Response.{Logical, Success}
 
     defstruct [:resp, :data, :metadata]
+
+    @typedoc """
+    Struct containing the data and metadata for a path in the secrets engine.
+
+    See the [Vault documentation](https://www.vaultproject.io/api/secret/kv/kv-v2.html#read-secret-version)
+    for the `kv` version 2 API.
+
+    * `:resp`: The original response received from Vault.
+    * `:data`: The key/value pairs for the path.
+    * `:metadata`: The metadata associated with the data.
+    """
+    @type t :: %__MODULE__{
+            resp: Success.t(),
+            data: %{optional(String.t()) => String.t()},
+            metadata: %{optional(String.t()) => any()}
+          }
 
     @doc false
     def mkresp({:ok, resp = %Success{logical: %Logical{data: data}}}),
@@ -51,8 +67,12 @@ defmodule ExVault.KV2 do
            metadata: data["metadata"]
          }}
 
+    @doc false
     def mkresp(resp), do: resp
   end
+
+  @typedoc "Response type returned by `get_data/3` and `get_data/4`."
+  @type get_data_response :: GetData.t() | ExVault.Response.Error.t()
 
   @doc """
   Read the value of a key.
@@ -62,7 +82,7 @@ defmodule ExVault.KV2 do
    * `mount` the mount path for the `kv` secrets engine.
    * `path` the path to the key in the secrets engine.
   """
-  @spec get_data(ExVault.client(), String.t(), String.t(), keyword()) :: ExVault.response()
+  @spec get_data(ExVault.client(), String.t(), String.t(), keyword()) :: get_data_response()
   def get_data(client, mount, path, opts) do
     query = Keyword.take(opts, [:version])
 
@@ -78,7 +98,7 @@ defmodule ExVault.KV2 do
    * `backend` the `ExVault.KV2` backend.
    * `path` the path to the key in the secrets engine.
   """
-  @spec get_data(t(), String.t(), keyword()) :: ExVault.response()
+  @spec get_data(t(), String.t(), keyword()) :: get_data_response()
   def get_data(backend, path, opts \\ []), do: get_data(backend.client, backend.mount, path, opts)
 
   @doc """
