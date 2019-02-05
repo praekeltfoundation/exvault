@@ -11,6 +11,15 @@ defmodule ExVault do
 
   @adapter Tesla.Adapter.Hackney
 
+  @typedoc """
+  Options:
+   * `:address` - Address of the Vault server to talk to. (Required)
+   * `:token` - The Vault token to authenticate with. If not provided, any
+     calls requiring authentication will fail.
+   * `:adapter` - The Tesla adapter to use. Defaults to
+     `Tesla.Adapter.Hackney`, which has the best out-of-the-box TLS support.
+     Don't change this without a specific reason.
+  """
   @type option() ::
           {:address, String.t()}
           | {:token, String.t()}
@@ -22,14 +31,6 @@ defmodule ExVault do
 
   @doc """
   Create a new `ExVault` client.
-
-  Options:
-   * `:address` - Address of the Vault server to talk to. (Required)
-   * `:token` - The Vault token to authenticate with. If not provided, any
-     calls requiring authentication will fail.
-   * `:adapter` - The Tesla adapter to use. Defaults to
-     `Tesla.Adapter.Hackney`, which has the best out-of-the-box TLS support.
-     Don't change this without a specific reason.
   """
   @spec new([option()]) :: client()
   def new(opts) do
