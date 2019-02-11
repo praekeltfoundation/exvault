@@ -58,9 +58,11 @@ defmodule ExVault.KV1 do
    * `client` the `ExVault` client.
    * `mount` the mount path for the `kv` secrets engine.
    * `path` the path to the key in the secrets engine.
+   * `data` the data to write as a map of string keys to string values.
   """
-  @spec write(ExVault.client(), String.t(), String.t(), any()) :: ExVault.response()
-  def write(client, mount, path, params), do: ExVault.write(client, "#{mount}/#{path}", params)
+  @spec write(ExVault.client(), String.t(), String.t(), %{String.t() => String.t()}) ::
+          ExVault.response()
+  def write(client, mount, path, data), do: ExVault.write(client, "#{mount}/#{path}", data)
 
   @doc """
   Write the value of a key.
@@ -68,9 +70,10 @@ defmodule ExVault.KV1 do
   Params:
    * `backend` the `ExVault.KV1` backend.
    * `path` the path to the key in the secrets engine.
+   * `data` the data to write as a map of string keys to string values.
   """
   @spec write(t(), String.t(), any()) :: ExVault.response()
-  def write(backend, path, params), do: write(backend.client, backend.mount, path, params)
+  def write(backend, path, data), do: write(backend.client, backend.mount, path, data)
 
   @doc """
   Delete a key.
