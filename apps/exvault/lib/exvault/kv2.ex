@@ -81,6 +81,7 @@ defmodule ExVault.KV2 do
    * `client` the `ExVault` client.
    * `mount` the mount path for the `kv` secrets engine.
    * `path` the path to the key in the secrets engine.
+   * `opts` TODO: document opts.
   """
   @spec get_data(ExVault.client(), String.t(), String.t(), keyword()) :: get_data_response()
   def get_data(client, mount, path, opts) do
@@ -97,6 +98,7 @@ defmodule ExVault.KV2 do
   Params:
    * `backend` the `ExVault.KV2` backend.
    * `path` the path to the key in the secrets engine.
+   * `opts` TODO: document opts.
   """
   @spec get_data(t(), String.t(), keyword()) :: get_data_response()
   def get_data(backend, path, opts \\ []), do: get_data(backend.client, backend.mount, path, opts)
@@ -108,6 +110,8 @@ defmodule ExVault.KV2 do
    * `client` the `ExVault` client.
    * `mount` the mount path for the `kv` secrets engine.
    * `path` the path to the key in the secrets engine.
+   * `data` the data to write as a JSON-compatible map.
+   * `opts` TODO: document opts.
   """
   @spec put_data(ExVault.client(), String.t(), String.t(), map(), keyword()) :: ExVault.response()
   def put_data(client, mount, path, data, opts) do
@@ -121,6 +125,8 @@ defmodule ExVault.KV2 do
   Params:
    * `backend` the `ExVault.KV2` backend.
    * `path` the path to the key in the secrets engine.
+   * `data` the data to write as a JSON-compatible map.
+   * `opts` TODO: document opts.
   """
   @spec put_data(t(), String.t(), map(), keyword()) :: ExVault.response()
   def put_data(backend, path, data, opts \\ []),
