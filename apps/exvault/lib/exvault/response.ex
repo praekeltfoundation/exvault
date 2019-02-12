@@ -2,8 +2,9 @@ defmodule ExVault.Response do
   @moduledoc """
   Structs for the most common Vault API response formats.
 
-  Vault does have a handful of APIs with responses that don't fit any of these,
-  but the documentation isn't particularly clear about what those are.
+  Generally, the data of a response is available in a `ExVault.Response.Logical`
+  struct wrapped in a `ExVault.Response.Success` struct. Errors are represented
+  with the `ExVault.Response.Error` struct.
   """
 
   defmodule Error do
@@ -18,6 +19,7 @@ defmodule ExVault.Response do
             errors: [String.t()]
           }
 
+    @doc false
     @spec from_resp(Tesla.Env.t()) :: t()
     def from_resp(%{status: status, body: %{"errors" => errors}}) do
       %__MODULE__{status: status, errors: errors}
@@ -28,7 +30,8 @@ defmodule ExVault.Response do
     @moduledoc """
     Vault API success response. This represents an HTTP 2xx response.
 
-    Usually, the `logical` field will contain a `Response.Logical` struct.
+    Usually, the `logical` field will contain a `ExVault.Response.Logical`
+    struct.
     """
 
     alias ExVault.Response.Logical
@@ -41,6 +44,7 @@ defmodule ExVault.Response do
             logical: Logical.t() | nil
           }
 
+    @doc false
     @spec from_resp(Tesla.Env.t()) :: t()
     def from_resp(%{status: status, body: body}) do
       %__MODULE__{
@@ -54,6 +58,9 @@ defmodule ExVault.Response do
   defmodule Logical do
     @moduledoc """
     Vault API "logical" response. Most Vault APIs return one of these.
+
+    This is based on [this](https://godoc.org/github.com/hashicorp/vault/logical#HTTPResponse)
+    Golang struct in the official Vault client.
     """
 
     defstruct [
@@ -80,6 +87,7 @@ defmodule ExVault.Response do
             auth: nil
           }
 
+    @doc false
     @spec from_body(Tesla.Env.body()) :: t() | nil
     def from_body(%{
           "request_id" => request_id,
@@ -108,6 +116,7 @@ defmodule ExVault.Response do
 
   @type t :: {:ok, Error.t() | Success.t()} | {:error, any()}
 
+  @doc false
   @spec parse_response(Tesla.Env.result()) :: t()
   def parse_response({:ok, %{status: status} = resp}) when status >= 400,
     do: {:ok, Error.from_resp(resp)}

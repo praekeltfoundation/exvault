@@ -25,6 +25,9 @@ defmodule VaultDevServer.MixProject do
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    []
+    [
+      # We need ex_doc in each subproject to generate separate docs.
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
+    ]
   end
 end
