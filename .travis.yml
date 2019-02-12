@@ -21,9 +21,9 @@ jobs:
       after_success: bash <(curl -s https://codecov.io/bash)
 
     # Skip Elixir 1.7 while we don't have many parallel builds
-    # - elixir: '1.7'
+    - elixir: '1.7'
       # Only run tests. We do the other checks in the primary build.
-      # script: VAULT_PATH=$(pwd) mix test
+      script: VAULT_PATH=$(pwd) mix test
 
     - elixir: '1.6'
       otp_release: '20.3'
