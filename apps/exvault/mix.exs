@@ -13,7 +13,11 @@ defmodule ExVault.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
-      docs: docs()
+      docs: docs(),
+      package: package(),
+      description: description(),
+      name: "ExVault",
+      source_url: "https://github.com/praekeltfoundation/exvault"
     ]
   end
 
@@ -54,6 +58,17 @@ defmodule ExVault.MixProject do
       main: "readme",
       source_url: "https://github.com/praekeltfoundation/exvault",
       extras: ["../../README.md"]
+    ]
+  end
+
+  defp description do
+    "Elixir client library for HashiCorp Vault"
+  end
+
+  defp package do
+    [
+      licenses: ["BSD 3-Clause"],
+      links: %{"GitHub" => "https://github.com/praekeltfoundation/exvault"}
     ]
   end
 end

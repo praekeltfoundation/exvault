@@ -44,9 +44,12 @@ jobs:
         # HEX_API_KEY=<secret>
         - secure: "dFLvTUZBPYekf0mpnx7yo/hKLgiOBuvZPMdsHjj6Z6CxhA7Hwskyab0ZfA2MMdo0GnmX5+i4dz691RcHiIMN6kPXkyXdM0WGC0JXqr6eSdQK6m/vgupYt+bkhdXY9UhSzcMXMOid2S2rNEXooMxnMl5B0EfvVTyyGcGuHcuYneG8KwiAimsESx/NGYDrhLvXO5iJy+dBTHdTBma5ucNQ33c9mGfVkjgKosZtr6LbS97fWS/TZFedn8KcKfxt2eqsuUPVbfa+ayfTKFiC+AovFOoRlOmSC60NVJy9CTzjVEpSM/jsLQExgcV9ajHguSXfUiNXxgilXHyFo/iHiD/WMmp0iBFiF90yNmcYbcOynmSEZXJplqP800R+rt3/+ZC7vJbuGqTKtVD2b1s12GfaJxVuYsnqyeE0h4EeHUawRxVqt4vUDvZ4+2CgC97myYsg6vuxPXL1IeJQ5Hn9SJ5V5uQvMIkPaDV3hUP+u5cg4ps6wNoPOvlZbn2f+bY0KkSS/5Dng9uT1Ru9C1k5FaTDe68TpoNBHvY29k/2qpPjgwAMK3GZ+LB8J8fzHOPJbQG1lHdDHifr+TwsHTJ9Toq6st1V0mVUgwbF6OdPc7jxxJ7rne5skjLCm+KJoE6UxDRINUVTuajJi6aEgHOwiaiOhJ8m/q6RUeXTYPReeqXl+mA="
       deploy:
-        provider: script
-        script: mix hex.publish --yes
-        on: {tags: true}
+        - provider: script
+          script: cd apps/exvault && mix hex.publish --yes
+          on: {tags: true}
+        - provider: script
+          script: cd apps/vaultdevserver && mix hex.publish --yes
+          on: {tags: true}
 
       script: skip
 
