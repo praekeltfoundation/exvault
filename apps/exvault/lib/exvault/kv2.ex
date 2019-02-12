@@ -72,7 +72,7 @@ defmodule ExVault.KV2 do
   end
 
   @typedoc "Response type returned by `get_data/3` and `get_data/4`."
-  @type get_data_response :: GetData.t() | ExVault.Response.Error.t()
+  @type get_data_response :: {:ok, GetData.t() | ExVault.Response.Error.t()} | {:error, any()}
 
   @doc """
   Read the value of a key.
