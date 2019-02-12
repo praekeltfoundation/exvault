@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.com/praekeltfoundation/exvault.svg?branch=master)](https://travis-ci.com/praekeltfoundation/exvault)
 [![codecov](https://codecov.io/gh/praekeltfoundation/exvault/branch/master/graph/badge.svg)](https://codecov.io/gh/praekeltfoundation/exvault)
+[![Inline docs](http://inch-ci.org/github/praekeltfoundation/exvault.svg?branch=master)](http://inch-ci.org/github/praekeltfoundation/exvault)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=praekeltfoundation/exvault)](https://dependabot.com)
 
 Elixir client library for [HashiCorp Vault](https://www.vaultproject.io).
