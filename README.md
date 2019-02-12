@@ -22,7 +22,7 @@ Since the package isn't yet published, you can install from github:
 ```elixir
 def deps do
   [
-    {:exvault, git: "git@github.com:praekeltfoundation/exvault", sparse: "apps/exvault"},
+    {:exvault, git: "https://github.com/praekeltfoundation/exvault.git", sparse: "apps/exvault"},
   ]
 end
 ```
