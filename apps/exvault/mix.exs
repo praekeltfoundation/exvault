@@ -38,7 +38,7 @@ defmodule ExVault.MixProject do
       {:jason, ">= 1.0.0"},
       # We use Hackney because it does cert and hostname verification by
       # default.
-      {:hackney, "~> 1.14.0"},
+      {:hackney, "~> 1.15.0"},
 
       # Test deps.
       {:vaultdevserver, in_umbrella: true, runtime: false, only: :test},
