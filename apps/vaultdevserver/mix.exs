@@ -11,7 +11,11 @@ defmodule VaultDevServer.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      package: package(),
+      description: description(),
+      name: "VaultDevServer",
+      source_url: "https://github.com/praekeltfoundation/exvault"
     ]
   end
 
@@ -28,6 +32,17 @@ defmodule VaultDevServer.MixProject do
     [
       # We need ex_doc in each subproject to generate separate docs.
       {:ex_doc, "~> 0.19", only: :dev, runtime: false}
+    ]
+  end
+
+  defp description do
+    "This is Jeremy's job!"
+  end
+
+  defp package do
+    [
+      licenses: ["BSD 3-Clause"],
+      links: %{"GitHub" => "https://github.com/praekeltfoundation/exvault"}
     ]
   end
 end

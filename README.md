@@ -9,8 +9,8 @@ Elixir client library for [HashiCorp Vault](https://www.vaultproject.io).
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `exvault` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `exvault` to your list of dependencies in
+`mix.exs`:
 
 ```elixir
 def deps do
@@ -20,7 +20,7 @@ def deps do
 end
 ```
 
-Since the package isn't yet published, you can install from GitHub:
+You can also install the latest code from GitHub:
 
 ```elixir
 def deps do
