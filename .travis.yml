@@ -41,13 +41,8 @@ jobs:
       if: tag IS present
 
       env:
-        - HEX_USERNAME=praekelt.org
-        # HEX_KEY='<secret>'
-        - secure: "xkQbC7tSunkHIUR+hQnkyiIkgBVE0hmTCxhRHFapnQCCthfMHn5DuPtvR66XaSxETjM67rEWDCfWvQ+QRf7fd1cT2dr6qBdb0kvam+Uom/ARf6ZFTkRtIOE7Had9fZU2IFYurdGFH7fikoKES+k7D6aNhMD2km53nyGKdM0Ro9JjpZiiH1m5U8vbHS87J7icrg8QJlRyIjDyNWnWpFaW/nm7+hIYGVq78PFM32HKQpbSzNj0SqbSkWBMJxOxcgsDFn6UpEfTBlWOXOscz2vmWX57co5GYvU7NTHxgXcUwIHeu4gbjKla4I6rSNc8/b6cxD118eTueE8LrAocZ7V2kC5korhH/Zn+f8MzoShKc06jpYNUwd6V8oGqriezew3BcNMzb0wumCN/wDfuL+9+cmpaZwgKzJq7Jbi7QJIo1KUpJtdULr+Lg3CgwjirdlAIpXv9FeszYPOg14nHMMHoFETBAS9zr9oJ8jmjVnILhArtHpNPUo7Ge1qmqiSjUzQEsVSZA/kX1HmQaTmmn+tv8Wp8tkMntH+xFjyE0cHxxWxbnLBub5P0PKmzwvMjV7blLVUxcjX2HLD8VNHy3lw8wz+RE5QcaHoQ9QZYM4EOz/52w8U3JjigIyqyEaLg/irJCbhu8+ZGCNj05DriKvPPYcxmPhba1aVTOwYGL69PHaU="
-
-      before_deploy:
-        - mix hex.config username "$HEX_USERNAME"
-        - mix hex.config key "$HEX_KEY"
+        # HEX_API_KEY=<secret>
+        - secure: "dFLvTUZBPYekf0mpnx7yo/hKLgiOBuvZPMdsHjj6Z6CxhA7Hwskyab0ZfA2MMdo0GnmX5+i4dz691RcHiIMN6kPXkyXdM0WGC0JXqr6eSdQK6m/vgupYt+bkhdXY9UhSzcMXMOid2S2rNEXooMxnMl5B0EfvVTyyGcGuHcuYneG8KwiAimsESx/NGYDrhLvXO5iJy+dBTHdTBma5ucNQ33c9mGfVkjgKosZtr6LbS97fWS/TZFedn8KcKfxt2eqsuUPVbfa+ayfTKFiC+AovFOoRlOmSC60NVJy9CTzjVEpSM/jsLQExgcV9ajHguSXfUiNXxgilXHyFo/iHiD/WMmp0iBFiF90yNmcYbcOynmSEZXJplqP800R+rt3/+ZC7vJbuGqTKtVD2b1s12GfaJxVuYsnqyeE0h4EeHUawRxVqt4vUDvZ4+2CgC97myYsg6vuxPXL1IeJQ5Hn9SJ5V5uQvMIkPaDV3hUP+u5cg4ps6wNoPOvlZbn2f+bY0KkSS/5Dng9uT1Ru9C1k5FaTDe68TpoNBHvY29k/2qpPjgwAMK3GZ+LB8J8fzHOPJbQG1lHdDHifr+TwsHTJ9Toq6st1V0mVUgwbF6OdPc7jxxJ7rne5skjLCm+KJoE6UxDRINUVTuajJi6aEgHOwiaiOhJ8m/q6RUeXTYPReeqXl+mA="
       deploy:
         provider: script
         script: mix hex.publish --yes
