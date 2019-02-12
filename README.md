@@ -20,7 +20,7 @@ def deps do
 end
 ```
 
-Since the package isn't yet published, you can install from github:
+Since the package isn't yet published, you can install from GitHub:
 
 ```elixir
 def deps do
