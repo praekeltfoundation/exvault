@@ -15,7 +15,7 @@ by adding `exvault` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:exvault, "~> 0.1.0"},
+    {:exvault, "~> 0.1.0-beta.0"},
   ]
 end
 ```
