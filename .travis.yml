@@ -11,19 +11,18 @@ jobs:
   include:
     - script:
         # This is basically `mix test` with coverage enabled.
-        - VAULT_PATH=$(pwd) mix coveralls.json
+        - VAULT_PATH=$(pwd) mix coveralls.json --umbrella
         - mix format --check-formatted
         # This will mention FIXME and TODO comments without failing, any other
         # issue fails the build.
         - mix credo
-        # Only print to the log for now. We can set up inch-ci.org later.
-        - mix inch
+        - mix inch.report
       after_success: bash <(curl -s https://codecov.io/bash)
 
     # Skip Elixir 1.7 while we don't have many parallel builds
-    # - elixir: '1.7'
+    - elixir: '1.7'
       # Only run tests. We do the other checks in the primary build.
-      # script: VAULT_PATH=$(pwd) mix test
+      script: VAULT_PATH=$(pwd) mix test
 
     - elixir: '1.6'
       otp_release: '20.3'
@@ -37,6 +36,24 @@ jobs:
           - $HOME/.pltcache
       before_script: travis_wait .ci/build-plt-cache.sh
       script: mix dialyzer --halt-exit-status
+
+    - stage: release
+      if: tag IS present
+
+      env:
+        - HEX_USERNAME=praekelt.org
+        # HEX_KEY='<secret>'
+        - secure: "xkQbC7tSunkHIUR+hQnkyiIkgBVE0hmTCxhRHFapnQCCthfMHn5DuPtvR66XaSxETjM67rEWDCfWvQ+QRf7fd1cT2dr6qBdb0kvam+Uom/ARf6ZFTkRtIOE7Had9fZU2IFYurdGFH7fikoKES+k7D6aNhMD2km53nyGKdM0Ro9JjpZiiH1m5U8vbHS87J7icrg8QJlRyIjDyNWnWpFaW/nm7+hIYGVq78PFM32HKQpbSzNj0SqbSkWBMJxOxcgsDFn6UpEfTBlWOXOscz2vmWX57co5GYvU7NTHxgXcUwIHeu4gbjKla4I6rSNc8/b6cxD118eTueE8LrAocZ7V2kC5korhH/Zn+f8MzoShKc06jpYNUwd6V8oGqriezew3BcNMzb0wumCN/wDfuL+9+cmpaZwgKzJq7Jbi7QJIo1KUpJtdULr+Lg3CgwjirdlAIpXv9FeszYPOg14nHMMHoFETBAS9zr9oJ8jmjVnILhArtHpNPUo7Ge1qmqiSjUzQEsVSZA/kX1HmQaTmmn+tv8Wp8tkMntH+xFjyE0cHxxWxbnLBub5P0PKmzwvMjV7blLVUxcjX2HLD8VNHy3lw8wz+RE5QcaHoQ9QZYM4EOz/52w8U3JjigIyqyEaLg/irJCbhu8+ZGCNj05DriKvPPYcxmPhba1aVTOwYGL69PHaU="
+
+      before_deploy:
+        - mix hex.config username "$HEX_USERNAME"
+        - mix hex.config key "$HEX_KEY"
+      deploy:
+        provider: script
+        script: mix hex.publish --yes
+        on: {tags: true}
+
+      script: skip
 
 # We already have PR builds, so don't build PR branches as well.
 branches:

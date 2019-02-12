@@ -4,7 +4,7 @@ defmodule ExVault.MixProject do
   def project do
     [
       app: :exvault,
-      version: "0.1.0",
+      version: "0.1.0-beta.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
@@ -34,11 +34,11 @@ defmodule ExVault.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:tesla, "~> 1.2.0"},
-      {:jason, ">= 1.0.0"},
+      {:tesla, "~> 1.2"},
+      {:jason, "~> 1.0"},
       # We use Hackney because it does cert and hostname verification by
       # default.
-      {:hackney, "~> 1.15.0"},
+      {:hackney, "~> 1.15"},
 
       # Test deps.
       {:vaultdevserver, in_umbrella: true, runtime: false, only: :test},

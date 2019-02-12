@@ -1,5 +1,10 @@
 # ExVault
 
+[![Build Status](https://travis-ci.com/praekeltfoundation/exvault.svg?branch=master)](https://travis-ci.com/praekeltfoundation/exvault)
+[![codecov](https://codecov.io/gh/praekeltfoundation/exvault/branch/master/graph/badge.svg)](https://codecov.io/gh/praekeltfoundation/exvault)
+[![Inline docs](http://inch-ci.org/github/praekeltfoundation/exvault.svg?branch=master)](http://inch-ci.org/github/praekeltfoundation/exvault)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=praekeltfoundation/exvault)](https://dependabot.com)
+
 Elixir client library for [HashiCorp Vault](https://www.vaultproject.io).
 
 ## Installation
@@ -10,17 +15,17 @@ by adding `exvault` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:exvault, "~> 0.1.0"},
+    {:exvault, "~> 0.1.0-beta.0"},
   ]
 end
 ```
 
-Since the package isn't yet published, you can install from github:
+Since the package isn't yet published, you can install from GitHub:
 
 ```elixir
 def deps do
   [
-    {:exvault, git: "git@github.com:praekeltfoundation/exvault", sparse: "apps/exvault"},
+    {:exvault, github: "praekeltfoundation/exvault", sparse: "apps/exvault"},
   ]
 end
 ```
