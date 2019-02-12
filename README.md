@@ -1,6 +1,7 @@
 # ExVault
 
 [![Build Status](https://travis-ci.com/praekeltfoundation/exvault.svg?branch=master)](https://travis-ci.com/praekeltfoundation/exvault)
+[![codecov](https://codecov.io/gh/praekeltfoundation/exvault/branch/master/graph/badge.svg)](https://codecov.io/gh/praekeltfoundation/exvault)
 
 Elixir client library for [HashiCorp Vault](https://www.vaultproject.io).
 
