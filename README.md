@@ -7,6 +7,8 @@
 
 Elixir client library for [HashiCorp Vault](https://www.vaultproject.io).
 
+Documentation is published on [HexDocs](https://hexdocs.pm/exvault).
+
 ## Installation
 
 The package can be installed by adding `exvault` to your list of dependencies in
