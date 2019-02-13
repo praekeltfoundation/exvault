@@ -11,7 +11,7 @@ jobs:
   include:
     - script:
         # This is basically `mix test` with coverage enabled.
-        - VAULT_PATH=$(pwd) mix coveralls.json --umbrella
+        - VAULT_PATH=$(pwd) mix coveralls.json
         - mix format --check-formatted
         # This will mention FIXME and TODO comments without failing, any other
         # issue fails the build.
@@ -41,17 +41,16 @@ jobs:
       if: tag IS present
 
       env:
-        # HEX_API_KEY=<secret>
-        - secure: "dFLvTUZBPYekf0mpnx7yo/hKLgiOBuvZPMdsHjj6Z6CxhA7Hwskyab0ZfA2MMdo0GnmX5+i4dz691RcHiIMN6kPXkyXdM0WGC0JXqr6eSdQK6m/vgupYt+bkhdXY9UhSzcMXMOid2S2rNEXooMxnMl5B0EfvVTyyGcGuHcuYneG8KwiAimsESx/NGYDrhLvXO5iJy+dBTHdTBma5ucNQ33c9mGfVkjgKosZtr6LbS97fWS/TZFedn8KcKfxt2eqsuUPVbfa+ayfTKFiC+AovFOoRlOmSC60NVJy9CTzjVEpSM/jsLQExgcV9ajHguSXfUiNXxgilXHyFo/iHiD/WMmp0iBFiF90yNmcYbcOynmSEZXJplqP800R+rt3/+ZC7vJbuGqTKtVD2b1s12GfaJxVuYsnqyeE0h4EeHUawRxVqt4vUDvZ4+2CgC97myYsg6vuxPXL1IeJQ5Hn9SJ5V5uQvMIkPaDV3hUP+u5cg4ps6wNoPOvlZbn2f+bY0KkSS/5Dng9uT1Ru9C1k5FaTDe68TpoNBHvY29k/2qpPjgwAMK3GZ+LB8J8fzHOPJbQG1lHdDHifr+TwsHTJ9Toq6st1V0mVUgwbF6OdPc7jxxJ7rne5skjLCm+KJoE6UxDRINUVTuajJi6aEgHOwiaiOhJ8m/q6RUeXTYPReeqXl+mA="
+        # HEX_API_KEY=[secret]
+        - secure: "hIsgbCOKX4xMJbQuZZfuNU8GhuS5lSMK9rADLpTDnuhZhVYmdXz2YcgTWkbmcQgiJW48IaNrsMlsr3kq6Z5NGj0mjiK0zwqVqHiaC8impBYRdSlJSkG/oZa1tjc/fpO3TZ3Gz+KyY7Zc1VoQNGSPYCr6fvEAgRHL+DvWdaMzoq6poHoQfE4maGvD4sKa6d9hpf1dE2gRvQy4SMCp352/TpauxLIDF/3ZZBASf8HkTSrJqvyWDqPAE7rkxnn4MJltXQgiv38DWZlh8qNOhptjfje/D89EqlO0qyZRWAVPFVU5mV+2x4drusfqcvfWl5iSWwzgUAuKGkWuYn665IMzL4nuVx5YvqJFPgs9Gl+FRCliZOJFzPUm0EBUHoAVSQcvEQm0HM31Sl12VPlSD8Uhy2uhrFjgP08hdYQ0rMUNZfXYB4YLY+lsplN4Pkn3SVZorLgHVXMAINKzUIq6rPq1sY7QjgpoD78NxZ4nh+rSg8EhA1Y8XS6MMW7yU2uC1kJE4wyCFd//YcSmcROTzbwlBJ9oqCbmp2Jv5bsiDW/AZlX2mr/EUyuCIta356CiZ6B7o0KNs+CiXKVLNpZqTixqAuhI/0RMxfW+aT9r9b3V7qXf/cLiDvD2PlPWAYeURWgbpC/Qm9polJ5JZvXVJAY0elu4Q18Anayq/G0KPBTTMsU="
       deploy:
-        - provider: script
-          script: cd apps/exvault && mix hex.publish --yes
-          on: {tags: true}
-        - provider: script
-          script: cd apps/vaultdevserver && mix hex.publish --yes
-          on: {tags: true}
+        provider: script
+        script: mix hex.publish --yes
+        on: {tags: true}
+        skip_cleanup: true  # Don't clean up deps
 
       script: skip
+      before_script: skip
 
 # We already have PR builds, so don't build PR branches as well.
 branches:
