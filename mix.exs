@@ -48,7 +48,7 @@ defmodule ExvaultUmbrella.MixProject do
       {:hackney, "~> 1.15"},
 
       # Test deps.
-      {:vaultdevserver, path: "../vaultdevserver", runtime: false, only: :test},
+      {:vaultdevserver, "~> 0.1", runtime: false, only: :test},
       {:plug_cowboy, "~> 2.0", only: :test},
 
       # Dev/test/build tools.
