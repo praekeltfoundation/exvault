@@ -51,8 +51,3 @@ jobs:
 
       script: skip
       before_script: skip
-
-# We already have PR builds, so don't build PR branches as well.
-branches:
-  only:
-    - master
