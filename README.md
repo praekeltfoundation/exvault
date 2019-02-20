@@ -17,7 +17,7 @@ The package can be installed by adding `exvault` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:exvault, "~> 0.1.0-beta.0"},
+    {:exvault, "~> 0.1.0-beta.1"},
   ]
 end
 ```
@@ -42,13 +42,13 @@ client = ExVault.new(address: "https://127.0.0.1:8200", token: "abcd-1234")
 This client can then be used to make various API calls. Assuming a v1 key-value
 secret backend is mounted at `/secret_kv_v1`:
 ```elixir
-{:ok, _} = ExVault.write(client, "secret_kv_v1", "my_key", %{"hello" => "world"})
+{:ok, _} = ExVault.write(client, "secret_kv_v1/my_key", %{"hello" => "world"})
 
-{:ok, resp} = ExVault.read(client, "secret_kv_v1", "my_key")
+{:ok, resp} = ExVault.read(client, "secret_kv_v1/my_key")
 %{"hello" => "world"} = resp.logical.data
 
-{:ok, _} = ExVault.delete(client, "secret_kv_v1", "my_key")
+{:ok, _} = ExVault.delete(client, "secret_kv_v1/my_key")
 
-{:ok, resp} = ExVault.read(client, "secret_kv_v1", "my_key")
+{:ok, resp} = ExVault.read(client, "secret_kv_v1/my_key")
 %ExVault.Response.Error{status: 404} = resp.logical.data
 ```
